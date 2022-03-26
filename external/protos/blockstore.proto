@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package helloworld;
+
+
+////////////////// Store RPC begin ////////////////
+message ReadRequest {
+  int64 address = 1;
+}
+message ReadResponse {
+  int32 errCode = 1;
+  bytes data = 2;
+}
+message WriteRequest {
+  int32 errCode = 1;
+  bytes data = 2;
+}
+message WriteResponse {
+  int32 errCode = 1;
+}
+message LogRequest {
+  int64 offset = 1;
+}
+message LogResponse {
+  bytes entry = 1;
+}
+service StoreRPC {
+  rpc SayRead (ReadRequest) returns (ReadResponse) {}
+  rpc SayWrite (WriteRequest) returns (WriteResponse) {}
+  rpc SayGetLog (LogRequest) returns (LogResponse) {}
+}
+////////////////// Store RPC end ////////////////
+
