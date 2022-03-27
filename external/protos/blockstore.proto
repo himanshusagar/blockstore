@@ -14,6 +14,7 @@ message ReadResponse {
 message WriteRequest {
   int32 errCode = 1;
   bytes data = 2;
+  int64 address = 3;
 }
 message WriteResponse {
   int32 errCode = 1;
