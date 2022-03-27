@@ -27,7 +27,10 @@ int main(int argc, char *argv[])
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
 
     char data[MAX_SIZE];
+    std::string name = "kaushik";
+    std::cout << storeRpc.SayWrite(92, name.data()) << std::endl;
     std::cout << storeRpc.SayRead(92, data) << std::endl;
+    std::cout << data[0] << std::endl;
 
     return 0;
 }

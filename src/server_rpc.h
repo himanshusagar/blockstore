@@ -15,9 +15,11 @@
 #include <errno.h>
 
 #define MAX_FILE_SIZE 1e11
+#define pathname "foo.txt"
 
 using namespace helloworld;
 using namespace grpc;
+using namespace std;
 
 class StoreRPCServiceImpl final : public StoreRPC::Service
 {
