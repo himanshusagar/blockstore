@@ -11,6 +11,10 @@
 #include <grpcpp/grpcpp.h>
 #include <signal.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+
+#define MAX_FILE_SIZE 1e11
 
 using namespace helloworld;
 using namespace grpc;
@@ -24,7 +28,20 @@ private:
 public:
     StoreRPCServiceImpl()
     {
-        storefd = open("foo.txt", O_RDWR);
+        storefd = open(pathname, O_RDWR, S_IRUSR | S_IWUSR);
+        if (storefd < 0)
+        {
+            storefd = open(pathname, O_CREAT, S_IRUSR | S_IWUSR);
+            if (storefd < 0)
+            {
+                cout << "File Creation Failed";
+            }
+            int result = fallocate(storefd, 0, 0, MAX_FILE_SIZE);
+            if (result == -1)
+            {
+                cout << "File Allocation Failed";
+            }
+        }
     }
 
     Status SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response);
