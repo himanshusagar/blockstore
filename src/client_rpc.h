@@ -23,13 +23,13 @@ class StoreRPCClient
 {
 public:
     StoreRPCClient(std::shared_ptr<Channel> channel)
-            : stub_(StoreRPC::NewStub(channel)) {}
+        : stub_(StoreRPC::NewStub(channel)) {}
 
-    int SayRead(int in);
+    int SayRead(int in, char *data);
+    int SayWrite(int in, char *data);
 
 private:
     std::unique_ptr<StoreRPC::Stub> stub_;
 };
 
-
-#endif //BLOCKSTORE_CLIENT_RPC_H
+#endif // BLOCKSTORE_CLIENT_RPC_H
