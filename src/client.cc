@@ -1,7 +1,7 @@
 #include <signal.h>
 #include "client_rpc.h"
 
-#include MAX_SIZE 4096
+#define MAX_SIZE 4096
 
 void sigintHandler(int sig_num)
 {

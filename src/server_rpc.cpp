@@ -11,35 +11,34 @@ using grpc::Status;
 
 Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response)
 {
-    int address = request->address;
+    int address = request->address();
     char buff[MAX_SIZE];
     lseek(storefd, address, SEEK_SET);
-    read(storefd, buff, MAX_SIZE);
-    response.set_data(buff);
+    int result = read(storefd, buff, MAX_SIZE);
+    response->set_data(buff);
     if (result == -1)
     {
-        response.set_errcode(errno);
+        response->set_errcode(errno);
     }
     else
     {
-        response.set_errcode(0);
+        response->set_errcode(0);
     }
     return Status::OK;
 }
 
 Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response)
 {
-    int address = request->address;
-    char buff[MAX_SIZE] = request->data;
+    int address = request->address();
     lseek(storefd, address, SEEK_SET);
-    int result = write(storefd, buff, MAX_SIZE);
+    int result = write(storefd, request->data().data(), MAX_SIZE);
     if (result == -1)
     {
-        response.set_errcode(errno);
+        response->set_errcode(errno);
     }
     else
     {
-        response.set_errcode(0);
+        response->set_errcode(0);
     }
     return Status::OK;
 }

@@ -24,9 +24,9 @@ int StoreRPCClient::SayRead(int in, char *data)
     // Act upon its status.
     if (status.ok())
     {
-        if (reply->get_errcode() == 0)
+        if (reply.errcode() == 0)
         {
-            data = reply.data();
+	    memcpy(data, reply.data().data(), MAX_SIZE);
             return 0;
         }
         else
@@ -56,7 +56,7 @@ int StoreRPCClient::SayWrite(int in, char *data)
     {
         if (reply.errcode() == 0)
         {
-            return 0
+            return 0;
         }
         else
         {
