@@ -4,7 +4,9 @@
 
 #include "client_rpc.h"
 
-int StoreRPCClient::SayRead(int in)
+#define MAX_SIZE 4096
+
+int StoreRPCClient::SayRead(int in, char *data)
 {
     // Data we are sending to the server.
     ReadRequest req;
@@ -18,12 +20,48 @@ int StoreRPCClient::SayRead(int in)
     ClientContext context;
 
     // The actual RPC.
-
     Status status = stub_->SayRead(&context, req, &reply);
     // Act upon its status.
     if (status.ok())
     {
-        return reply.errcode();
+        if (reply.errcode() == 0)
+        {
+	    memcpy(data, reply.data().data(), MAX_SIZE);
+            return 0;
+        }
+        else
+        {
+            return reply.errcode();
+        }
+    }
+    else
+    {
+        std::cout << status.error_code() << std::endl;
+        return -1;
+    }
+}
+
+int StoreRPCClient::SayWrite(int in, char *data)
+{
+    WriteRequest req;
+    req.set_address(in);
+    req.set_data(data);
+
+    WriteResponse reply;
+
+    ClientContext context;
+
+    Status status = stub_->SayWrite(&context, req, &reply);
+    if (status.ok())
+    {
+        if (reply.errcode() == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return reply.errcode();
+        }
     }
     else
     {

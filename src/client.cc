@@ -1,6 +1,8 @@
 #include <signal.h>
 #include "client_rpc.h"
 
+#define MAX_SIZE 4096
+
 void sigintHandler(int sig_num)
 {
     std::cerr << "Clean Shutdown\n";
@@ -22,8 +24,13 @@ int main(int argc, char *argv[])
     ch_args.SetMaxSendMessageSize(INT_MAX);
 
     StoreRPCClient storeRpc(
-            grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials() , ch_args ));
+        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
 
-    std::cout << storeRpc.SayRead(92) << std::endl;
+    char data[MAX_SIZE];
+    std::string name = "kaushik";
+    std::cout << storeRpc.SayWrite(92, name.data()) << std::endl;
+    std::cout << storeRpc.SayRead(92, data) << std::endl;
+    std::cout << data[0] << std::endl;
+
     return 0;
 }
