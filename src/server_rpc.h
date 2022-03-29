@@ -13,9 +13,10 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
+#include "client_rpc.h"
 
 #define MAX_FILE_SIZE 1e11
-#define pathname "foo.txt"
+#define pathname "/users/kkaushik/dev/foo.txt"
 
 using namespace helloworld;
 using namespace grpc;
@@ -28,6 +29,24 @@ private:
     int storefd;
 
 public:
+    bool leader;
+    string backup_conn;
+    backup_conn.resize(256);
+    int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
+    ChannelArguments ch_args;
+
+    if (hostbuffer[4] == '0')
+    {
+        backup_conn = "128.110.219.93:50051"
+    }
+    else
+    {
+        backup_conn = "128.110.219.112:50051"
+    }
+
+    StoreRPCClient storeReplicateRpc(
+        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
+
     StoreRPCServiceImpl()
     {
         storefd = open(pathname, O_RDWR, S_IRUSR | S_IWUSR);

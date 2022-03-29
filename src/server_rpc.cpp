@@ -29,17 +29,33 @@ Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *r
 
 Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response)
 {
+
     int address = request->address();
     lseek(storefd, address, SEEK_SET);
+
+    // Main Action
     int result = write(storefd, request->data().data(), MAX_SIZE);
     if (result == -1)
     {
         response->set_errcode(errno);
     }
-    else
+    // Checking if the current instance is primary
+    if (leader)
     {
-        response->set_errcode(0);
+        // Sending to the primary backup
+        int rep_result = storeReplicateRpc.SayWrite(address, request->data());
+        if (rep_result != 0)
+        {
+            response->set_errcode(rep_result);
+        }
+        else
+        {
+            cout << "Replication on Back is successfull" << endl;
+        }
     }
+
+    response->set_errcode(0);
+
     return Status::OK;
 }
 

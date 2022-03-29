@@ -1,6 +1,8 @@
 #include <signal.h>
 #include "server_rpc.h"
 
+using namespace std;
+
 void sigintHandler(int sig_num)
 {
     std::cerr << "Clean Shutdown\n";
@@ -15,6 +17,19 @@ void run_server()
 {
     std::string server_address("localhost:50051");
     StoreRPCServiceImpl service;
+    string hostbuffer;
+    hostbuffer.resize(256);
+
+    int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
+    if (hostbuffer[4] == '0')
+    {
+        service.leader = true;
+    }
+    else
+    {
+        service.leader = false;
+    }
+    std::cout << hostbuffer << "  " << service.leader << std::endl;
     //  grpc::reflection::InitProtoReflectionServerBuilderPlugin();
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
