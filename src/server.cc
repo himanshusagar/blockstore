@@ -18,18 +18,19 @@ void run_server()
 {
     string hostbuffer;
     string backup_str;
+    string server_address;
     hostbuffer.resize(256);
 
     int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
     if (hostbuffer[4] == '0')
     {
         backup_str = "128.110.219.110:50051";
-        std::string server_address("128.110.219.112:50051");
+        server_address = "128.110.219.112:50051";
     }
     else
     {
         backup_str = "128.110.219.112:50051";
-        std::string server_address("128.110.219.110:50051");
+        server_address = "128.110.219.110:50051";
     }
     cout << "curr host is " << hostbuffer << endl;
     cout << "backup host is " << backup_str << endl;
