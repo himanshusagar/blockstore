@@ -24,7 +24,7 @@ void run_server()
     int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
     if (hostbuffer[4] == '0')
     {
-        backup_str = "128.110.219.93:50051";
+        backup_str = "128.110.219.110:50051";
     }
     else
     {

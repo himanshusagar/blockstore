@@ -47,10 +47,11 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         if (rep_result != 0)
         {
             response->set_errcode(rep_result);
+            cout << "Replication on Backup is failed" << endl;
         }
         else
         {
-            cout << "Replication on Back is successfull" << endl;
+            cout << "Replication on Backup is successfull" << endl;
         }
     }
 
