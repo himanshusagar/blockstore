@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 {
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
-    const std::string target_str = "localhost:50051";
+    const std::string target_str = "10.10.1.1:50051";
     grpc::ChannelArguments ch_args;
 
     ch_args.SetMaxReceiveMessageSize(INT_MAX);

@@ -34,9 +34,11 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     lseek(storefd, address, SEEK_SET);
 
     // Main Action
+    cout << "Write" << endl;
     int result = write(storefd, request->data().data(), MAX_SIZE);
     if (result == -1)
     {
+        cout << "Write Successfull" << endl;
         response->set_errcode(errno);
     }
     // Checking if the current instance is primary

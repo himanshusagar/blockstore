@@ -24,13 +24,13 @@ void run_server()
     int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
     if (hostbuffer[4] == '0')
     {
-        backup_str = "128.110.219.110:50051";
-        server_address = "128.110.219.112:50051";
+        backup_str = "10.10.1.2:50051";
+        server_address = "10.10.1.1:50051";
     }
     else
     {
-        backup_str = "128.110.219.112:50051";
-        server_address = "128.110.219.110:50051";
+        backup_str = "10.10.1.1:50051";
+        server_address = "10.10.1.2:50051";
     }
     cout << "curr host is " << hostbuffer << endl;
     cout << "backup host is " << backup_str << endl;
