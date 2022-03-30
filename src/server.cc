@@ -30,6 +30,8 @@ void run_server()
     {
         backup_str = "128.110.219.112:50051";
     }
+    cout << "curr host is " << hostbuffer << endl;
+    cout << "backup host is " << backup_str << endl;
 
     StoreRPCServiceImpl service(backup_str);
     if (hostbuffer[4] == '0')
