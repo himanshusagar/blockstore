@@ -16,7 +16,6 @@ void sigintHandler(int sig_num)
 
 void run_server()
 {
-    std::string server_address("localhost:50051");
     string hostbuffer;
     string backup_str;
     hostbuffer.resize(256);
@@ -25,10 +24,12 @@ void run_server()
     if (hostbuffer[4] == '0')
     {
         backup_str = "128.110.219.110:50051";
+        std::string server_address("128.110.219.112:50051");
     }
     else
     {
         backup_str = "128.110.219.112:50051";
+        std::string server_address("128.110.219.110:50051");
     }
     cout << "curr host is " << hostbuffer << endl;
     cout << "backup host is " << backup_str << endl;

@@ -46,6 +46,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         int rep_result = storeReplicateRpc->SayWrite(address, request->data().data());
         if (rep_result != 0)
         {
+            cout << rep_result;
             response->set_errcode(rep_result);
             cout << "Replication on Backup is failed" << endl;
         }
