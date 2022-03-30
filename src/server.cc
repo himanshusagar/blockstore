@@ -1,5 +1,6 @@
 #include <signal.h>
 #include "server_rpc.h"
+#include "client_rpc.h"
 
 using namespace std;
 
@@ -16,11 +17,21 @@ void sigintHandler(int sig_num)
 void run_server()
 {
     std::string server_address("localhost:50051");
-    StoreRPCServiceImpl service;
     string hostbuffer;
+    string backup_str;
     hostbuffer.resize(256);
 
     int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
+    if (hostbuffer[4] == '0')
+    {
+        backup_str = "128.110.219.93:50051";
+    }
+    else
+    {
+        backup_str = "128.110.219.112:50051";
+    }
+
+    StoreRPCServiceImpl service(backup_str);
     if (hostbuffer[4] == '0')
     {
         service.leader = true;
@@ -29,6 +40,7 @@ void run_server()
     {
         service.leader = false;
     }
+
     std::cout << hostbuffer << "  " << service.leader << std::endl;
     //  grpc::reflection::InitProtoReflectionServerBuilderPlugin();
     ServerBuilder builder;

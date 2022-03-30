@@ -43,7 +43,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     if (leader)
     {
         // Sending to the primary backup
-        int rep_result = storeReplicateRpc.SayWrite(address, request->data());
+        int rep_result = storeReplicateRpc->SayWrite(address, request->data().data());
         if (rep_result != 0)
         {
             response->set_errcode(rep_result);

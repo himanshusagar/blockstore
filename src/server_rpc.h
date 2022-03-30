@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 #include "client_rpc.h"
 
 #define MAX_FILE_SIZE 1e11
@@ -30,25 +32,21 @@ private:
 
 public:
     bool leader;
-    string backup_conn;
-    backup_conn.resize(256);
-    int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
-    ChannelArguments ch_args;
+    char hostbuffer[256];
+    int hostname = gethostname(hostbuffer, 256);
+    StoreRPCClient *storeReplicateRpc;
 
-    if (hostbuffer[4] == '0')
+    StoreRPCServiceImpl(string &backup_str)
     {
-        backup_conn = "128.110.219.93:50051"
-    }
-    else
-    {
-        backup_conn = "128.110.219.112:50051"
-    }
 
-    StoreRPCClient storeReplicateRpc(
-        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
+        const std::string target_str = "localhost:50051";
+        grpc::ChannelArguments ch_args;
+        ch_args.SetMaxReceiveMessageSize(INT_MAX);
+        ch_args.SetMaxSendMessageSize(INT_MAX);
 
-    StoreRPCServiceImpl()
-    {
+        storeReplicateRpc = new StoreRPCClient(
+            grpc::CreateCustomChannel(backup_str, grpc::InsecureChannelCredentials(), ch_args));
+
         storefd = open(pathname, O_RDWR, S_IRUSR | S_IWUSR);
         if (storefd < 0)
         {

@@ -26,7 +26,7 @@ public:
         : stub_(StoreRPC::NewStub(channel)) {}
 
     int SayRead(int in, char *data);
-    int SayWrite(int in, char *data);
+    int SayWrite(int in, const char *data);
 
 private:
     std::unique_ptr<StoreRPC::Stub> stub_;
