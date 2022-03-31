@@ -39,10 +39,12 @@ void run_server()
     if (hostbuffer[4] == '0')
     {
         service.leader = true;
+        service.backupIsActive = true;
     }
     else
     {
         service.leader = false;
+        service.backupIsActive = false;
     }
 
     std::cout << hostbuffer << "  " << service.leader << std::endl;

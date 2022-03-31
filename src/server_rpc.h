@@ -41,6 +41,7 @@ private:
 
 public:
     bool leader;
+    bool backupIsActive;
     char hostbuffer[256];
     int maxRetry;
     int hostname = gethostname(hostbuffer, 256);

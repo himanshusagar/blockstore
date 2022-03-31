@@ -52,16 +52,18 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         response->set_errcode(errno);
     }
     // Checking if the current instance is primary
-    if (leader)
+    if (leader && backupIsActive)
     {
         while (retry < maxRetry && rep_result != 0)
         {
             rep_result = storeReplicateRpc->SayWrite(address, request->data().data());
+            cout << "Replicate Result Status" << rep_result << endl;
             retry = retry + 1;
             if (rep_result != 0)
             {
-                cout << rep_result;
+                cout << rep_result << endl;
                 response->set_errcode(rep_result);
+
                 cout << "Replication on Backup failed and will be retried" << endl;
             }
             else
@@ -72,7 +74,9 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
             }
             if (rep_result != 0)
             {
-                cout << "Replication on Backup is failed" << endl;
+                cout << "Replication on Backup is failed after several retries" << endl;
+                cout << "Making Backup Inactive" << endl;
+                backupIsActive = false;
             }
         }
         // Sending to the primary backup
