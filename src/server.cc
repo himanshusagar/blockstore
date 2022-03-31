@@ -18,9 +18,10 @@ void run_server()
 {
     string hostbuffer;
     string backup_str;
+    string phase;
     string server_address;
     hostbuffer.resize(256);
-
+    phase = "start";
     int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
     if (hostbuffer[4] == '0')
     {
@@ -35,7 +36,7 @@ void run_server()
     cout << "curr host is " << hostbuffer << endl;
     cout << "backup host is " << backup_str << endl;
 
-    StoreRPCServiceImpl service(backup_str);
+    StoreRPCServiceImpl service(backup_str, phase);
     if (hostbuffer[4] == '0')
     {
         service.leader = true;
