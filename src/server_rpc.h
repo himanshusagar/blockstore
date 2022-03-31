@@ -45,13 +45,14 @@ public:
     char hostbuffer[256];
     int maxRetry;
     int hostname = gethostname(hostbuffer, 256);
+    std::string currPhase;
     deque<Request *> request_queue;
     unordered_map<int, Request *> requestMap;
     StoreRPCClient *storeReplicateRpc;
 
-    StoreRPCServiceImpl(string &backup_str)
+    StoreRPCServiceImpl(string &backup_str, string &phase)
     {
-
+        currPhase = "start";
         const std::string target_str = "localhost:50051";
         grpc::ChannelArguments ch_args;
         ch_args.SetMaxReceiveMessageSize(INT_MAX);
@@ -76,6 +77,9 @@ public:
         }
         maxRetry = 16;
     }
+
+    int backupRecovery();
+    int leaderShift();
 
     Status SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response);
     Status SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response);
