@@ -16,6 +16,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "client_rpc.h"
+#include <deque>
+#include <unordered_map>
 
 #define MAX_FILE_SIZE 1e11
 #define pathname "/users/kkaushik/dev/foo.txt"
@@ -23,6 +25,13 @@
 using namespace helloworld;
 using namespace grpc;
 using namespace std;
+
+class Request
+{
+public:
+    int address;
+    const char *data;
+};
 
 class StoreRPCServiceImpl final : public StoreRPC::Service
 {
@@ -34,6 +43,8 @@ public:
     bool leader;
     char hostbuffer[256];
     int hostname = gethostname(hostbuffer, 256);
+    deque<Request *> request_queue;
+    unordered_map<int, Request *> requestMap;
     StoreRPCClient *storeReplicateRpc;
 
     StoreRPCServiceImpl(string &backup_str)

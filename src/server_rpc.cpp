@@ -31,8 +31,17 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
 {
 
     int address = request->address();
-    lseek(storefd, address, SEEK_SET);
 
+    Request *requestNode = NULL;
+    requestNode = new Request();
+    requestNode->address = address;
+    requestNode->data = request->data().data();
+    lseek(storefd, address, SEEK_SET);
+    if (leader)
+    {
+        request_queue.push_front(requestNode);
+    }
+    requestMap[address] = requestNode;
     // Main Action
     cout << "Write" << endl;
     int result = write(storefd, request->data().data(), MAX_SIZE);
@@ -54,6 +63,8 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         }
         else
         {
+            request_queue.pop_back();
+            requestMap.erase(address);
             cout << "Replication on Backup is successfull" << endl;
         }
     }
