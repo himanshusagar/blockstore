@@ -31,9 +31,9 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
 {
 
     int address = request->address();
-
-    Request *requestNode = NULL;
+    int retry = 0 Request *requestNode = NULL;
     requestNode = new Request();
+    int rep_result = -1;
     requestNode->address = address;
     requestNode->data = request->data().data();
     lseek(storefd, address, SEEK_SET);
@@ -53,20 +53,28 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     // Checking if the current instance is primary
     if (leader)
     {
+        while (retry < maxRetry && rep_result != 0)
+        {
+            rep_result = storeReplicateRpc->SayWrite(address, request->data().data());
+            retry = retry + 1;
+            if (rep_result != 0)
+            {
+                cout << rep_result;
+                response->set_errcode(rep_result);
+                cout << "Replication on Backup failed and will be retried" << endl;
+            }
+            else
+            {
+                request_queue.pop_back();
+                requestMap.erase(address);
+                cout << "Replication on Backup is successfull" << endl;
+            }
+            if (rep_result != 0)
+            {
+                cout << "Replication on Backup is failed" << endl;
+            }
+        }
         // Sending to the primary backup
-        int rep_result = storeReplicateRpc->SayWrite(address, request->data().data());
-        if (rep_result != 0)
-        {
-            cout << rep_result;
-            response->set_errcode(rep_result);
-            cout << "Replication on Backup is failed" << endl;
-        }
-        else
-        {
-            request_queue.pop_back();
-            requestMap.erase(address);
-            cout << "Replication on Backup is successfull" << endl;
-        }
     }
 
     response->set_errcode(0);

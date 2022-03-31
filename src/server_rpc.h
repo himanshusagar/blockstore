@@ -42,6 +42,7 @@ private:
 public:
     bool leader;
     char hostbuffer[256];
+    int maxRetry;
     int hostname = gethostname(hostbuffer, 256);
     deque<Request *> request_queue;
     unordered_map<int, Request *> requestMap;
@@ -72,6 +73,7 @@ public:
                 cout << "File Allocation Failed";
             }
         }
+        maxRetry = 16;
     }
 
     Status SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response);
