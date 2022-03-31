@@ -31,7 +31,8 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
 {
 
     int address = request->address();
-    int retry = 0 Request *requestNode = NULL;
+    int retry = 0;
+    Request *requestNode = NULL;
     requestNode = new Request();
     int rep_result = -1;
     requestNode->address = address;
