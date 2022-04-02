@@ -29,17 +29,61 @@ Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *r
 
 Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response)
 {
+
     int address = request->address();
+    int retry = 0;
+    Request *requestNode = NULL;
+    requestNode = new Request();
+    int rep_result = -1;
+    requestNode->address = address;
+    requestNode->data = request->data().data();
     lseek(storefd, address, SEEK_SET);
+    if (leader)
+    {
+        request_queue.push_front(requestNode);
+    }
+    requestMap[address] = requestNode;
+    // Main Action
+    cout << "Write" << endl;
     int result = write(storefd, request->data().data(), MAX_SIZE);
     if (result == -1)
     {
+        cout << "Write Successfull" << endl;
         response->set_errcode(errno);
     }
-    else
+    // Checking if the current instance is primary
+    if (leader && backupIsActive)
     {
-        response->set_errcode(0);
+        while (retry < maxRetry && rep_result != 0)
+        {
+            rep_result = storeReplicateRpc->SayWrite(address, request->data().data());
+            cout << "Replicate Result Status" << rep_result << endl;
+            retry = retry + 1;
+            if (rep_result != 0)
+            {
+                cout << rep_result << endl;
+                response->set_errcode(rep_result);
+
+                cout << "Replication on Backup failed and will be retried" << endl;
+            }
+            else
+            {
+                request_queue.pop_back();
+                requestMap.erase(address);
+                cout << "Replication on Backup is successfull" << endl;
+            }
+            if (rep_result != 0)
+            {
+                cout << "Replication on Backup is failed after several retries" << endl;
+                cout << "Making Backup Inactive" << endl;
+                backupIsActive = false;
+            }
+        }
+        // Sending to the primary backup
     }
+
+    response->set_errcode(0);
+
     return Status::OK;
 }
 

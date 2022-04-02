@@ -26,7 +26,7 @@ int StoreRPCClient::SayRead(int in, char *data)
     {
         if (reply.errcode() == 0)
         {
-	    memcpy(data, reply.data().data(), MAX_SIZE);
+            memcpy(data, reply.data().data(), MAX_SIZE);
             return 0;
         }
         else
@@ -41,7 +41,7 @@ int StoreRPCClient::SayRead(int in, char *data)
     }
 }
 
-int StoreRPCClient::SayWrite(int in, char *data)
+int StoreRPCClient::SayWrite(int in, const char *data)
 {
     WriteRequest req;
     req.set_address(in);
