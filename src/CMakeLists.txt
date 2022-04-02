@@ -5,6 +5,8 @@ project(blockstore)
 
 file(GLOB SRCS_Server server.cc server_rpc.h server_rpc.cpp client_rpc.h client_rpc.cpp)
 file(GLOB SRCS_Client client.cc client_rpc.h client_rpc.cpp)
+file(GLOB SRCS_Client measure_client.cc client_rpc.h client_rpc.cpp)
+
 
 add_executable(server ${SRCS_Server})
 add_executable(client ${SRCS_Client})

@@ -3,11 +3,18 @@
 //
 
 #include "client_rpc.h"
+#include <time.h>
+
+#define BILLION (long long int)1000000000
 
 #define MAX_SIZE 4096
 
 int StoreRPCClient::SayRead(int in, char *data)
 {
+
+    struct timespec start, end, mid;
+    long long int diff;
+
     // Data we are sending to the server.
     ReadRequest req;
     req.set_address(in);
@@ -20,7 +27,13 @@ int StoreRPCClient::SayRead(int in, char *data)
     ClientContext context;
 
     // The actual RPC.
+    clock_gettime(CLOCK_MONOTONIC, &start);
     Status status = stub_->SayRead(&context, req, &reply);
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
+    diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+    std::cout << diff << std::endl;
+
     // Act upon its status.
     if (status.ok())
     {
@@ -43,6 +56,9 @@ int StoreRPCClient::SayRead(int in, char *data)
 
 int StoreRPCClient::SayWrite(int in, const char *data)
 {
+    struct timespec start, end, mid;
+    long long int diff;
+
     WriteRequest req;
     req.set_address(in);
     req.set_data(data);
@@ -51,7 +67,12 @@ int StoreRPCClient::SayWrite(int in, const char *data)
 
     ClientContext context;
 
+    clock_gettime(CLOCK_MONOTONIC, &start);
     Status status = stub_->SayWrite(&context, req, &reply);
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
+    diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+    std::cout << diff << std::endl;
     if (status.ok())
     {
         if (reply.errcode() == 0)
