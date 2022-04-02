@@ -31,6 +31,8 @@ int main(int argc, char *argv[])
     std::cout << storeRpc.SayWrite(92, name.data()) << std::endl;
     std::cout << storeRpc.SayRead(92, data) << std::endl;
     std::cout << data[0] << std::endl;
-
+    std::cout << storeRpc.PingLeader() << std::endl;
+    std::cout << storeRpc.PingBackup() << std::endl;
+    
     return 0;
 }

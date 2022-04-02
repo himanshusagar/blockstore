@@ -40,9 +40,11 @@ private:
     int storefd;
 
 public:
+    int retries = 3;
     bool leader;
     bool backupIsActive;
     char hostbuffer[256];
+    int failed_heartbeats;
     int maxRetry;
     int hostname = gethostname(hostbuffer, 256);
     std::string currPhase;
@@ -84,6 +86,7 @@ public:
     Status SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response);
     Status SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response);
     Status SayGetLog(ServerContext *context, const LogRequest *request, LogResponse *response);
+    Status HeartBeat(ServerContext *context, const PingRequest *request, PongResponse *response);
 };
 
 #endif // BLOCKSTORE_SERVER_RPC_H
