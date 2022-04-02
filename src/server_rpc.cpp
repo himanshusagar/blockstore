@@ -95,7 +95,7 @@ Status StoreRPCServiceImpl::SayGetLog(ServerContext *context, const LogRequest *
 Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest *request, PongResponse *response)
 {
     string req = request->request();
-    cout << "HeartBeat: " << req << endl;
+    // cout << "HeartBeat: " << req << endl;
     response->set_response("I am alive!");
     response->set_leader(leader);
     return Status::OK;

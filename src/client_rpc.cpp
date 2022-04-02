@@ -81,12 +81,8 @@ int StoreRPCClient::PingLeader(){
     if (status.ok())
     {
         if (reply.leader()){
-            cout << "Successful ping to leader" << endl;
+            // cout << "Successful ping to leader" << endl;
             return 0;
-        }
-        else{
-            cout << "Leader seems to be in backup mode" << endl;
-            // TODO handle connection problems?
         }
     }
     return -1;
@@ -103,12 +99,8 @@ int StoreRPCClient::PingBackup(){
     if (status.ok())
     {
         if (reply.leader() == false){
-            cout << "Successful ping to backup" << endl;
+            // cout << "Successful ping to backup" << endl;
             return 0;
-        }
-        else{
-            cout << "Backup seems to be in leader mode" << endl;
-            // TODO handle connection problems?
         }
     }
     return -1;
