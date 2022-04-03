@@ -24,7 +24,7 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
     ch_args.SetMaxReceiveMessageSize(INT_MAX);
     ch_args.SetMaxSendMessageSize(INT_MAX);
 
-    StoreRPCClient storeRpc(
+    service->connOtherServer = new StoreRPCClient(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
 
     while(true)
@@ -42,6 +42,7 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
                 // leader died. need to change mode to leader
                 service->leader = true;
                 service->backupIsActive = false;
+                service->PerformRecovery();
             }
             // waiting till backup/leader comes back alive
             sem_wait(&service->mutex);
@@ -51,10 +52,10 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
         }
 
         if (leader){
-            ret = storeRpc.PingBackup();
+            ret = service->connOtherServer->PingBackup();
         }
         else{
-            ret = storeRpc.PingLeader();
+            ret = service->connOtherServer->PingLeader();
         }
         if (ret !=0){
             service->failed_heartbeats += 1;

@@ -41,6 +41,29 @@ int StoreRPCClient::SayRead(int in, char *data)
     }
 }
 
+int StoreRPCClient::SayGetLog(int in, WriteRequest& obj)
+{
+    LogRequest req;
+    req.set_offset(in);
+    LogResponse reply;
+    ClientContext context;
+
+    Status status = stub_->SayGetLog(&context, req, &reply);
+    if (status.ok())
+    {
+        if(reply.retcode() == 1)
+        {
+            return 1;
+        }
+        else
+        {
+            obj = reply.entry();
+            return 0;
+        }
+    }
+    return -1;
+
+};
 int StoreRPCClient::SayWrite(int in, const char *data)
 {
     WriteRequest req;
