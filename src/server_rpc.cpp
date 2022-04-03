@@ -151,6 +151,5 @@ Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest 
         sem_getvalue(&mutex, &value); 
         cout << "HeartBeat value: after" << value << endl;
     }
-    PerformRecovery();
     return Status::OK;
 }
