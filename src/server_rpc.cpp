@@ -101,7 +101,6 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
             {
                 cout << "Replication on Backup is failed after several retries" << endl;
                 cout << "Making Backup Inactive" << endl;
-
                 request_queue.push_front( request );
                 backupIsActive = false;
             }
@@ -121,7 +120,7 @@ Status StoreRPCServiceImpl::SayGetLog(ServerContext *context, const LogRequest *
     {
         //In range
         const WriteRequest* obj = request_queue.at(index);
-        response->set_entry(obj->SerializeAsString());
+        response->set_allocated_entry(const_cast<WriteRequest *>(obj));
         response->set_retcode(0);
     }
     else
