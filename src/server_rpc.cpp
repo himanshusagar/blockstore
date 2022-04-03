@@ -31,8 +31,6 @@ int StoreRPCServiceImpl::PerformRecovery()
         index++;
     }
     cout << "Recovery Done" << endl;
-    backupIsActive = true;
-
 }
 Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response)
 {
@@ -128,6 +126,7 @@ Status StoreRPCServiceImpl::SayGetLog(ServerContext *context, const LogRequest *
     {
         // Done
         request_queue.clear();
+        backupIsActive = true;
         response->set_retcode(1);
     }
 

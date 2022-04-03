@@ -51,11 +51,11 @@ int StoreRPCClient::SayGetLog(int in, WriteRequest& obj)
     Status status = stub_->SayGetLog(&context, req, &reply);
     if (status.ok())
     {
-        if(reply.retcode() == 1)
+        if(reply.retcode() == 1) // Done
         {
             return 1;
         }
-        else
+        else // 0 means continue;
         {
             obj = reply.entry();
             return 0;
