@@ -91,3 +91,23 @@ Status StoreRPCServiceImpl::SayGetLog(ServerContext *context, const LogRequest *
 {
     return Status::OK;
 }
+
+Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest *request, PongResponse *response)
+{
+    string req = request->request();
+    // cout << "HeartBeat: " << req << endl;
+    response->set_response("I am alive!");
+    response->set_leader(leader);
+
+    // cout << "value "<< value <<endl;
+    int value, ret; 
+    sem_getvalue(&mutex, &value); 
+    while (value == 0)
+    {
+        cout<< "HeartBeat value: before" << value<< endl;
+        ret = sem_post(&mutex);
+        sem_getvalue(&mutex, &value); 
+        cout << "HeartBeat value: after" << value << endl;
+    }
+    return Status::OK;
+}

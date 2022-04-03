@@ -18,6 +18,7 @@
 #include "client_rpc.h"
 #include <deque>
 #include <unordered_map>
+#include <semaphore.h>
 
 #define MAX_FILE_SIZE 1e11
 #define pathname "/users/kkaushik/dev/foo.txt"
@@ -40,9 +41,12 @@ private:
     int storefd;
 
 public:
+    sem_t mutex;
+    int retries = 3;
     bool leader;
     bool backupIsActive;
     char hostbuffer[256];
+    int failed_heartbeats;
     int maxRetry;
     int hostname = gethostname(hostbuffer, 256);
     std::string currPhase;
@@ -84,6 +88,7 @@ public:
     Status SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response);
     Status SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response);
     Status SayGetLog(ServerContext *context, const LogRequest *request, LogResponse *response);
+    Status HeartBeat(ServerContext *context, const PingRequest *request, PongResponse *response);
 };
 
 #endif // BLOCKSTORE_SERVER_RPC_H

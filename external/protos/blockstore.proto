@@ -4,6 +4,13 @@ package helloworld;
 
 
 ////////////////// Store RPC begin ////////////////
+message PingRequest{
+  string request = 1;
+}
+message PongResponse{
+  string response = 1;
+  bool leader = 2;
+}
 message ReadRequest {
   int64 address = 1;
 }
@@ -29,6 +36,7 @@ service StoreRPC {
   rpc SayRead (ReadRequest) returns (ReadResponse) {}
   rpc SayWrite (WriteRequest) returns (WriteResponse) {}
   rpc SayGetLog (LogRequest) returns (LogResponse) {}
+  rpc HeartBeat (PingRequest) returns (PongResponse) {}
 }
 ////////////////// Store RPC end ////////////////
 

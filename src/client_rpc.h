@@ -18,6 +18,7 @@
 
 using namespace helloworld;
 using namespace grpc;
+using namespace std;
 
 class StoreRPCClient
 {
@@ -27,6 +28,8 @@ public:
 
     int SayRead(int in, char *data);
     int SayWrite(int in, const char *data);
+    int PingLeader();
+    int PingBackup();
 
 private:
     std::unique_ptr<StoreRPC::Stub> stub_;

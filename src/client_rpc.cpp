@@ -70,3 +70,39 @@ int StoreRPCClient::SayWrite(int in, const char *data)
         return -1;
     }
 }
+int StoreRPCClient::PingLeader(){
+    PingRequest req;
+    PongResponse reply;
+
+    req.set_request("Hello Leader, give response!");
+
+    ClientContext context;
+    Status status = stub_->HeartBeat(&context, req, &reply);
+    if (status.ok())
+    {
+        if (reply.leader()){
+            // cout << "Successful ping to leader" << endl;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+int StoreRPCClient::PingBackup(){
+    PingRequest req;
+    PongResponse reply;
+
+    req.set_request("Hello Backup, give response!");
+
+    ClientContext context;
+    Status status = stub_->HeartBeat(&context, req, &reply);
+    if (status.ok())
+    {
+        if (reply.leader() == false){
+            // cout << "Successful ping to backup" << endl;
+            return 0;
+        }
+    }
+    return -1;
+}
+
