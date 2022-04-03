@@ -27,6 +27,9 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
      service->connOtherServer = new StoreRPCClient(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
 
+    if(!service->leader)
+        service->PerformRecovery();
+
     while(true)
     {
         int ret;
@@ -131,8 +134,7 @@ void run_server()
     cout << getpid() << endl;
     sem_init(&service.mutex, 0, 1);
     thread t1(heartbeat_thread, service.leader, backup_str, &service);
-    if(!service.leader)
-        service.PerformRecovery();
+
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.
