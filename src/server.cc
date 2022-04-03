@@ -40,7 +40,7 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
         }
         if (ret !=0){
             service->failed_heartbeats += 1;
-            cout<< "Failed heartbeat" <<endl;
+            cout<< "Failed heartbeat " << service->failed_heartbeats <<endl;
         }
         else{
             service->failed_heartbeats = 0;
@@ -68,6 +68,8 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
             sem_getvalue(&(service->mutex), &value); 
             cout<< "value: after" << value<< endl;
             service->failed_heartbeats = 0;
+            storeRpc = StoreRPCClient(grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
+
             // wait over ?
             // TODO: Add logic for recovery
             continue;
