@@ -24,15 +24,30 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
     ch_args.SetMaxReceiveMessageSize(INT_MAX);
     ch_args.SetMaxSendMessageSize(INT_MAX);
 
-    service->connOtherServer = new StoreRPCClient(
+    StoreRPCClient storeRpc(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
 
     while(true)
     {
         int ret;
-        usleep(100);
-        if (service->failed_heartbeats > service->retries){
-            cout << "Time to switch mode" <<endl;
+        usleep(500);
+        // cout<< "heartbeat thread: "<<service->failed_heartbeats <<endl;
+        if (leader){
+            ret = storeRpc.PingBackup();
+        }
+        else{
+            ret = storeRpc.PingLeader();
+        }
+        if (ret !=0){
+            service->failed_heartbeats += 1;
+            cout<< "Failed heartbeat " << service->failed_heartbeats <<endl;
+        }
+        else{
+            service->failed_heartbeats = 0;
+        }
+        if (service->failed_heartbeats > service->retries)
+        {
+            cout << "Time to switch mode " << pthread_self() <<endl;
             // switch logic
             if (leader){
                 // backup died. write request will add to queue
@@ -42,26 +57,22 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
                 // leader died. need to change mode to leader
                 service->leader = true;
                 service->backupIsActive = false;
-                service->PerformRecovery();
             }
+             int value; 
             // waiting till backup/leader comes back alive
-            sem_wait(&service->mutex);
-            // wait over
+            sem_getvalue(&(service->mutex), &value); 
+            cout<< "value: before" << value<< endl;
+            sem_wait(&(service->mutex)); // 1 -> 0
+            sem_wait(&(service->mutex)); // 0 -> -1
+           
+            sem_getvalue(&(service->mutex), &value); 
+            cout<< "value: after" << value<< endl;
+            service->failed_heartbeats = 0;
+            storeRpc = StoreRPCClient(grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
+
+            // wait over ?
             // TODO: Add logic for recovery
             continue;
-        }
-
-        if (leader){
-            ret = service->connOtherServer->PingBackup();
-        }
-        else{
-            ret = service->connOtherServer->PingLeader();
-        }
-        if (ret !=0){
-            service->failed_heartbeats += 1;
-        }
-        else{
-            service->failed_heartbeats = 0;
         }
     }
 }
@@ -117,6 +128,7 @@ void run_server()
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << std::endl;
+    cout << getpid() << endl;
     sem_init(&service.mutex, 0, 1);
     thread t1(heartbeat_thread, service.leader, backup_str, &service);
 
