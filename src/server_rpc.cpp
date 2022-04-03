@@ -13,9 +13,9 @@ int StoreRPCServiceImpl::PerformRecovery()
 {
     WriteRequest entry;
     int index = 0;
-
     while( connOtherServer->SayGetLog(index, entry) == 0)
     {
+        cout << "Inside PerformRecovery " << index  << " " << entry.address() << " " << entry.data() << endl;
         if(entry.address() == 0)
         {
             cout << "Unfilled entry" << endl;
@@ -122,6 +122,7 @@ Status StoreRPCServiceImpl::SayGetLog(ServerContext *context, const LogRequest *
         const WriteRequest* obj = request_queue.at(index);
         response->set_allocated_entry(const_cast<WriteRequest *>(obj));
         response->set_retcode(0);
+        cout << "Inside SayGetLog" << obj->address() << " " << obj->data() << endl;
     }
     else
     {
@@ -150,5 +151,6 @@ Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest 
         sem_getvalue(&mutex, &value); 
         cout << "HeartBeat value: after" << value << endl;
     }
+    PerformRecovery();
     return Status::OK;
 }

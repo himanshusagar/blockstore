@@ -57,7 +57,6 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
                 // leader died. need to change mode to leader
                 service->leader = true;
                 service->backupIsActive = false;
-                service->PerformRecovery();
             }
              int value; 
             // waiting till backup/leader comes back alive
