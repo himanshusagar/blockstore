@@ -98,5 +98,11 @@ Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest 
     // cout << "HeartBeat: " << req << endl;
     response->set_response("I am alive!");
     response->set_leader(leader);
+    int value; 
+    sem_getvalue(&mutex, &value); 
+    if (value == 0){
+        cout<< "Looks like got heartbeat request. Checking if recovery needs to be done." << endl;
+        sem_post(&mutex);
+    }
     return Status::OK;
 }

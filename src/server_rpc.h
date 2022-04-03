@@ -18,6 +18,7 @@
 #include "client_rpc.h"
 #include <deque>
 #include <unordered_map>
+#include <semaphore.h>
 
 #define MAX_FILE_SIZE 1e11
 #define pathname "/users/kkaushik/dev/foo.txt"
@@ -40,6 +41,7 @@ private:
     int storefd;
 
 public:
+    sem_t mutex;
     int retries = 3;
     bool leader;
     bool backupIsActive;

@@ -33,7 +33,20 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
         usleep(100);
         if (service->failed_heartbeats > service->retries){
             cout << "Time to switch mode" <<endl;
-            // TODO add switch logic
+            // switch logic
+            if (leader){
+                // backup died. write request will add to queue
+                service->backupIsActive = false;
+            }
+            if (leader != true){
+                // leader died. need to change mode to leader
+                service->leader = true;
+                service->backupIsActive = false;
+            }
+            // waiting till backup/leader comes back alive
+            sem_wait(&service->mutex);
+            // wait over
+            // TODO: Add logic for recovery
             continue;
         }
 
@@ -54,6 +67,7 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
 
 void run_server()
 {
+
     string hostbuffer;
     string backup_str;
     string phase;
@@ -102,7 +116,7 @@ void run_server()
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << std::endl;
-
+    sem_init(&service.mutex, 0, 1);
     thread t1(heartbeat_thread, service.leader, backup_str, &service);
 
     // Wait for the server to shutdown. Note that some other thread must be
