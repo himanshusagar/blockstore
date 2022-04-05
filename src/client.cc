@@ -48,7 +48,7 @@ int run_client()
     {
         result = active_server->SayWrite(92, name.data());
         retry = retry + 1;
-        cout << "Retrying" << endl;
+        //cout << "Retrying" << endl;
     }
     if (retry == max_retry)
     {
@@ -56,7 +56,7 @@ int run_client()
         int server_check = std::system(ping_cmd.data());
         if (server_check != 0)
         {
-            cout << "Changing the Primary Server" << endl;
+            //cout << "Changing the Primary Server" << endl;
             if (active_server == &storeRpc1)
             {
                 active_server = &storeRpc2;
@@ -72,9 +72,9 @@ int run_client()
 
     string some1 = "dummyData" , some;
     some.resize(MAX_SIZE , '.');
-    std::cout << "written : " << active_server->SayWrite(20, some1.data()) << std::endl;
-    std::cout << "read : " << active_server->SayRead(20, some.data()) << std::endl;
-    std::cout << some << std::endl;
+    active_server->SayWrite(20, some1.data());
+    active_server->SayRead(20, some.data());
+    //std::cout << some << std::endl;
     //std::cout << active_server->PingLeader() << std::endl;
     //std::cout << active_server->PingBackup() << std::endl;
 
