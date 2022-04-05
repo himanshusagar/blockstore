@@ -5,39 +5,43 @@ import random
 import sys
 import os
 import subprocess
+import argparse
+import threading
 
 class Workload:
-    def __init__(self, action="read", action_type="random", count=100):
+    def __init__(self, action="write", action_type="random", count=100, port=50051, clients=100):
         self.action = action
         self.action_type = action_type
         self.count = count
-        self.output_file = "_".join([action, action_type, count, datetime.now().strftime("%d/%m/%Y %H:%M:%S")])
         self.workloads = []
+        self.port = port
+        self.clients = clients
 
-    def simulate_work_loads(self):
-        if self.type == "random":
-            self.simulate_random_workloads()
-        if self.type == "sequential":
-            self.simulate_sequential_loads()
+    def simulate_workloads(self):
+        self.simulate_workload()
 
-    def simulate_random_workloads(self):
-        process = subprocess.Popen("./measure_client" + " " + action + " " +
-                                   action_type + " " + count + " >> " + self.output_file, shell=False)
+    def simulate_workload(self):
+        output_file = "_".join([self.action, self.action_type, str(self.count), datetime.now().strftime("%d_%m_%Y_%H_%M_%S")])
+        subprocess.call(['touch', output_file])
+        process = subprocess.Popen("./measure_client " + str(self.port) + " " + self.action + " " +
+                                   self.action_type + " " + str(self.count) + " >> " + output_file, shell=True)
         out, err = process.communicate()
         errcode = process.returncode
-        print(errcode)
         process.kill()
         process.terminate()
+        self.parse_file(output_file)
 
-    def parse_file(self):
-        file = open(self.output_file, 'r')
+    def parse_file(self, output_file):
+        file = open(output_file, 'r')
         lines = file.readlines()
         tot_time = 0.0
         for line in lines:
             tot_time += float(line)
-        print(f"action={} type={} count={} average={}".format(self.action, self.action_type, self.count, self.average))
-
+        self.average = tot_time / self.count
+        print(f"action={self.action} type={self.action_type} count={self.count} average={self.average}")            
 
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
+    wl = Workload()
+    wl.simulate_workloads()
