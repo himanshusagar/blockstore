@@ -17,9 +17,11 @@ int main(int argc, char *argv[])
 {
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
-    std::string pri_str = "10.10.1.3:50051";
-    std::string sec_str = "10.10.1.1:50051";
-    std::string curr_str = sec_str;
+    std::string port = argv[1];
+
+    std::string pri_str = "10.10.1.1:" + port;
+    std::string sec_str = "10.10.1.2:" + port;
+    std::string curr_str = pri_str;
 
     int max_retry = 3;
     int retry = 0;
