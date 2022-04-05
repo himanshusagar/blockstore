@@ -25,8 +25,7 @@ int main(int argc, char *argv[])
     signal(SIGINT, sigintHandler);
     std::string action = argv[1];
     std::string action_type = argv[2];
-    std::string output_file = argv[3];
-    int count = atoi(argv[4]);
+    int count = atoi(argv[3]);
 
     cout << count << endl;
     char read_data[MAX_SIZE];
@@ -57,6 +56,5 @@ int main(int argc, char *argv[])
             storeRpc.SayWrite(dis(gen), write_data.data());
         }
     }
-
     return 0;
 }
