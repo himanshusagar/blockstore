@@ -141,9 +141,18 @@ void run_server()
     server->Wait();
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
+    CrashPoints::g_spnt = S_NO_CRASH;
+    if(argc >= 2)
+    {
+        int crashP = std::stoi(argv[1]);
+        if( (S_POINTS)crashP < S_MAX)
+            CrashPoints::g_spnt =  (S_POINTS)crashP;
+        else
+            std::cout << "Server Unable to set crash point" << endl;
+    }
     run_server();
 }
