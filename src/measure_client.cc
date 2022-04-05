@@ -27,7 +27,6 @@ int main(int argc, char *argv[])
     std::string action_type = argv[2];
     int count = atoi(argv[3]);
 
-    cout << count << endl;
     char read_data[MAX_SIZE];
     std::string write_data = "kaushik";
 

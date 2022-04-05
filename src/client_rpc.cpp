@@ -54,7 +54,7 @@ int StoreRPCClient::SayRead(int in, char *data)
     }
 }
 
-int StoreRPCClient::SayGetLog(int in, WriteRequest& obj)
+int StoreRPCClient::SayGetLog(int in, WriteRequest &obj)
 {
     LogRequest req;
     req.set_offset(in);
@@ -64,7 +64,7 @@ int StoreRPCClient::SayGetLog(int in, WriteRequest& obj)
     Status status = stub_->SayGetLog(&context, req, &reply);
     if (status.ok())
     {
-        if(reply.retcode() == 1) // Done
+        if (reply.retcode() == 1) // Done
         {
             return 1;
         }
@@ -75,7 +75,6 @@ int StoreRPCClient::SayGetLog(int in, WriteRequest& obj)
         }
     }
     return -1;
-
 };
 int StoreRPCClient::SayWrite(int in, const char *data)
 {
@@ -114,7 +113,8 @@ int StoreRPCClient::SayWrite(int in, const char *data)
         return -1;
     }
 }
-int StoreRPCClient::PingLeader(){
+int StoreRPCClient::PingLeader()
+{
     PingRequest req;
     PongResponse reply;
 
@@ -124,7 +124,8 @@ int StoreRPCClient::PingLeader(){
     Status status = stub_->HeartBeat(&context, req, &reply);
     if (status.ok())
     {
-        if (reply.leader()){
+        if (reply.leader())
+        {
             // cout << "Successful ping to leader" << endl;
             return 0;
         }
@@ -132,7 +133,8 @@ int StoreRPCClient::PingLeader(){
     return -1;
 }
 
-int StoreRPCClient::PingBackup(){
+int StoreRPCClient::PingBackup()
+{
     PingRequest req;
     PongResponse reply;
 
@@ -142,11 +144,11 @@ int StoreRPCClient::PingBackup(){
     Status status = stub_->HeartBeat(&context, req, &reply);
     if (status.ok())
     {
-        if (reply.leader() == false){
+        if (reply.leader() == false)
+        {
             // cout << "Successful ping to backup" << endl;
             return 0;
         }
     }
     return -1;
 }
-
