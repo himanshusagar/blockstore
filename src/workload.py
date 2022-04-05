@@ -38,11 +38,7 @@ class Workload:
         for line in lines:
             tot_time += float(line)
         self.average = tot_time / self.count
-        print(f"action={self.action} type={self.action_type} count={self.count} average={self.average}")
-
-    def execute_multiple_clients(self):
-        pass
-
+        print(f"action={self.action} type={self.action_type} count={self.count} average={self.average}")            
 
 
 if __name__ == '__main__':
