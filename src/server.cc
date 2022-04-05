@@ -4,6 +4,8 @@
 #include <thread>
 #include <unistd.h>
 
+S_POINTS CrashPoints::g_spnt = S_NO_CRASH;
+
 using namespace std;
 
 void sigintHandler(int sig_num)
@@ -16,7 +18,8 @@ void sigintHandler(int sig_num)
     std::exit(0);
 }
 
-void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service){
+void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
+{
 
     const std::string target_str = address;
     grpc::ChannelArguments ch_args;
@@ -24,51 +27,60 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
     ch_args.SetMaxReceiveMessageSize(INT_MAX);
     ch_args.SetMaxSendMessageSize(INT_MAX);
 
-    StoreRPCClient storeRpc(
+    service->connOtherServer = new StoreRPCClient(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
 
-    while(true)
+    if (!service->leader)
+        service->PerformRecovery();
+
+    while (true)
     {
         int ret;
         usleep(500);
         // cout<< "heartbeat thread: "<<service->failed_heartbeats <<endl;
-        if (leader){
-            ret = storeRpc.PingBackup();
+        if (leader)
+        {
+            ret = service->connOtherServer->PingBackup();
         }
-        else{
-            ret = storeRpc.PingLeader();
+        else
+        {
+            ret = service->connOtherServer->PingLeader();
         }
-        if (ret !=0){
+        if (ret != 0)
+        {
             service->failed_heartbeats += 1;
-            cout<< "Failed heartbeat " << service->failed_heartbeats <<endl;
+            cout << "Failed heartbeat " << service->failed_heartbeats << endl;
         }
-        else{
+        else
+        {
             service->failed_heartbeats = 0;
         }
         if (service->failed_heartbeats > service->retries)
         {
-            cout << "Time to switch mode " << pthread_self() <<endl;
+            cout << "Time to switch mode " << pthread_self() << endl;
             // switch logic
-            if (leader){
+            if (leader)
+            {
                 // backup died. write request will add to queue
                 service->backupIsActive = false;
             }
-            if (leader != true){
+            if (leader != true)
+            {
                 // leader died. need to change mode to leader
                 service->leader = true;
                 service->backupIsActive = false;
             }
-             int value; 
+            int value;
             // waiting till backup/leader comes back alive
-            sem_getvalue(&(service->mutex), &value); 
-            cout<< "value: before" << value<< endl;
+            sem_getvalue(&(service->mutex), &value);
+            cout << "value: before" << value << endl;
             sem_wait(&(service->mutex)); // 1 -> 0
             sem_wait(&(service->mutex)); // 0 -> -1
-           
-            sem_getvalue(&(service->mutex), &value); 
-            cout<< "value: after" << value<< endl;
+
+            sem_getvalue(&(service->mutex), &value);
+            cout << "value: after" << value << endl;
             service->failed_heartbeats = 0;
-            storeRpc = StoreRPCClient(grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
+            service->connOtherServer = new StoreRPCClient(grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
 
             // wait over ?
             // TODO: Add logic for recovery
@@ -77,7 +89,7 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
     }
 }
 
-void run_server()
+void run_server(std::string port)
 {
 
     string hostbuffer;
@@ -89,13 +101,13 @@ void run_server()
     int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
     if (hostbuffer[4] == '0')
     {
-        backup_str = "10.10.1.2:50051";
-        server_address = "10.10.1.1:50051";
+        backup_str = "10.10.1.2:" + port;
+        server_address = "10.10.1.1:" + port;
     }
     else
     {
-        backup_str = "10.10.1.1:50051";
-        server_address = "10.10.1.2:50051";
+        backup_str = "10.10.1.1:" + port;
+        server_address = "10.10.1.2:" + port;
     }
     cout << "curr host is " << hostbuffer << endl;
     cout << "backup host is " << backup_str << endl;
@@ -111,7 +123,7 @@ void run_server()
     {
         service.leader = false;
         service.backupIsActive = false;
-    }    
+    }
 
     std::cout << hostbuffer << "  " << service.leader << std::endl;
     //  grpc::reflection::InitProtoReflectionServerBuilderPlugin();
@@ -137,9 +149,19 @@ void run_server()
     server->Wait();
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
-    run_server();
+    std::string port = argv[1];
+
+    if(argc >= 3)
+    {
+        int crashP = std::stoi(argv[2]);
+        if( (S_POINTS)crashP < S_MAX)
+            CrashPoints::g_spnt =  (S_POINTS)crashP;
+        else
+            std::cout << "Server Unable to set crash point" << endl;
+    }
+    run_server(port);
 }

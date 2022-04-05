@@ -19,6 +19,7 @@
 #include <deque>
 #include <unordered_map>
 #include <semaphore.h>
+#include "crash_points.h"
 
 #define MAX_FILE_SIZE 1e11
 #define pathname "/users/kkaushik/dev/foo.txt"
@@ -41,6 +42,7 @@ private:
     int storefd;
 
 public:
+    StoreRPCClient *connOtherServer;
     sem_t mutex;
     int retries = 3;
     bool leader;
@@ -50,7 +52,7 @@ public:
     int maxRetry;
     int hostname = gethostname(hostbuffer, 256);
     std::string currPhase;
-    deque<Request *> request_queue;
+    deque<const WriteRequest *> request_queue;
     unordered_map<int, Request *> requestMap;
     StoreRPCClient *storeReplicateRpc;
 
@@ -82,7 +84,7 @@ public:
         maxRetry = 16;
     }
 
-    int backupRecovery();
+    int PerformRecovery();
     int leaderShift();
 
     Status SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response);
