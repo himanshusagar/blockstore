@@ -52,6 +52,10 @@ Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *r
 
 Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response)
 {
+    if(leader)
+        CrashPoints::serverCrash(PRIMARY_AFTER_WRITE_REQ_RECV);
+    else
+        CrashPoints::serverCrash(BACKUP_AFTER_WRITE_REQ_RECV);
 
     int address = request->address();
     int retry = 0;
@@ -74,6 +78,12 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         cout << "Write Failed" << endl;
         response->set_errcode(errno);
     }
+
+    if(leader)
+        CrashPoints::serverCrash(PRIMARY_AFTER_WRITE);
+    else
+        CrashPoints::serverCrash(BACKUP_AFTER_WRITE);
+
     // Checking if the current instance is primary
     if (leader && backupIsActive)
     {
@@ -91,6 +101,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
             }
             else
             {
+                CrashPoints::serverCrash(PRIMARY_AFTER_ACK_FROM_B);
                 // request_queue.pop_back();
                 requestMap.erase(address);
                 cout << "Replication on Backup is successfull" << endl;

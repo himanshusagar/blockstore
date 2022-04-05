@@ -32,5 +32,3 @@ target_link_libraries(measure_client
         p3protolib)
 add_dependencies(measure_client p3protolib)
 set_target_properties(measure_client PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
-
-

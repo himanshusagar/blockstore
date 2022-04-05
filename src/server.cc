@@ -4,6 +4,8 @@
 #include <thread>
 #include <unistd.h>
 
+S_POINTS CrashPoints::g_spnt = S_NO_CRASH;
+
 using namespace std;
 
 void sigintHandler(int sig_num)
@@ -152,5 +154,14 @@ int main(int argc, char *argv[])
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
     std::string port = argv[1];
+
+    if(argc >= 3)
+    {
+        int crashP = std::stoi(argv[2]);
+        if( (S_POINTS)crashP < S_MAX)
+            CrashPoints::g_spnt =  (S_POINTS)crashP;
+        else
+            std::cout << "Server Unable to set crash point" << endl;
+    }
     run_server(port);
 }

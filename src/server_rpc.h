@@ -19,6 +19,7 @@
 #include <deque>
 #include <unordered_map>
 #include <semaphore.h>
+#include "crash_points.h"
 
 #define MAX_FILE_SIZE 1e11
 #define pathname "/users/kkaushik/dev/foo.txt"
