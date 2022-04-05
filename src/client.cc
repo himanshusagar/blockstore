@@ -67,10 +67,12 @@ int main(int argc, char *argv[])
         }
     }
 
-    // std::cout << active_server->SayRead(92, data) << std::endl;
-    // std::cout << data[0] << std::endl;
-    // std::cout << active_server->PingLeader() << std::endl;
-    // std::cout << active_server->PingBackup() << std::endl;
+    string some = "dummyData";
+    std::cout << active_server->SayWrite(20, some.data()) << std::endl;
+    std::cout << active_server->SayRead(20, some.data()) << std::endl;
+    std::cout << some << std::endl;
+    //std::cout << active_server->PingLeader() << std::endl;
+    //std::cout << active_server->PingBackup() << std::endl;
 
     return 0;
 }
