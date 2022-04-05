@@ -45,6 +45,4 @@ public:
 private:
     CrashPoints() = default;
 };
-S_POINTS CrashPoints::g_spnt = S_NO_CRASH;
-C_POINTS CrashPoints::g_cpnt = C_NO_CRASH;
 #endif //BLOCKSTORE_CRASH_POINTS_H

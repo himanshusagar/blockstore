@@ -4,6 +4,8 @@
 #include <thread>
 #include <unistd.h>
 
+S_POINTS CrashPoints::g_spnt = S_NO_CRASH;
+
 using namespace std;
 
 void sigintHandler(int sig_num)
@@ -141,11 +143,12 @@ void run_server()
     server->Wait();
 }
 
+
 int main(int argc, char *argv[])
 {
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
-    CrashPoints::g_spnt = S_NO_CRASH;
+
     if(argc >= 2)
     {
         int crashP = std::stoi(argv[1]);
