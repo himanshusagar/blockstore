@@ -7,27 +7,26 @@ import os
 import subprocess
 
 class Workload:
-    def __init__(self, action="read", action_type="random", count=100):
+    def __init__(self, action="read", action_type="random", count=100, port=50051):
         self.action = action
         self.action_type = action_type
         self.count = count
         self.output_file = "_".join([action, action_type, count, datetime.now().strftime("%d/%m/%Y %H:%M:%S")])
         self.workloads = []
+        self.port = port
 
     def simulate_work_loads(self):
-        if self.type == "random":
-            self.simulate_random_workloads()
-        if self.type == "sequential":
-            self.simulate_sequential_loads()
+        self.simulate_workloads()
 
-    def simulate_random_workloads(self):
-        process = subprocess.Popen("./measure_client" + " " + action + " " +
-                                   action_type + " " + count + " >> " + self.output_file, shell=False)
+    def simulate_workloads(self):
+        process = subprocess.Popen("./measure_client" + " " + self.action + " " +
+                                   self.action_type + " " + self.count + " >> " + self.output_file, shell=False)
         out, err = process.communicate()
         errcode = process.returncode
         print(errcode)
         process.kill()
         process.terminate()
+        self.parse_file()
 
     def parse_file(self):
         file = open(self.output_file, 'r')
