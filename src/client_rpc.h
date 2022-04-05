@@ -28,6 +28,7 @@ public:
 
     int SayRead(int in, char *data);
     int SayWrite(int in, const char *data);
+    int SayGetLog(int in, WriteRequest& obj);
     int PingLeader();
     int PingBackup();
 

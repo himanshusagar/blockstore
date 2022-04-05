@@ -30,7 +30,8 @@ message LogRequest {
   int64 offset = 1;
 }
 message LogResponse {
-  bytes entry = 1;
+  WriteRequest entry = 1;
+  int32 retCode = 2;
 }
 service StoreRPC {
   rpc SayRead (ReadRequest) returns (ReadResponse) {}

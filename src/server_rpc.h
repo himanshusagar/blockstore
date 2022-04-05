@@ -41,6 +41,7 @@ private:
     int storefd;
 
 public:
+    StoreRPCClient *connOtherServer;
     sem_t mutex;
     int retries = 3;
     bool leader;
@@ -50,7 +51,7 @@ public:
     int maxRetry;
     int hostname = gethostname(hostbuffer, 256);
     std::string currPhase;
-    deque<Request *> request_queue;
+    deque<const WriteRequest *> request_queue;
     unordered_map<int, Request *> requestMap;
     StoreRPCClient *storeReplicateRpc;
 
@@ -82,7 +83,7 @@ public:
         maxRetry = 16;
     }
 
-    int backupRecovery();
+    int PerformRecovery();
     int leaderShift();
 
     Status SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response);

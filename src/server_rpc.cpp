@@ -9,6 +9,29 @@
 
 using grpc::Status;
 
+int StoreRPCServiceImpl::PerformRecovery()
+{
+    WriteRequest entry;
+    int index = 0;
+    while (connOtherServer->SayGetLog(index, entry) == 0)
+    {
+        cout << "Inside PerformRecovery " << index << " " << entry.address() << " " << entry.data() << endl;
+        if (entry.address() == 0)
+        {
+            cout << "Unfilled entry" << endl;
+            return -1;
+        }
+        lseek(storefd, entry.address(), SEEK_SET);
+        int result = write(storefd, entry.data().data(), MAX_SIZE);
+        if (result == -1)
+        {
+            cout << "Write Failed" << endl;
+            break;
+        }
+        index++;
+    }
+    cout << "Recovery Done" << endl;
+}
 Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response)
 {
     int address = request->address();
@@ -40,7 +63,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     lseek(storefd, address, SEEK_SET);
     if (leader)
     {
-        request_queue.push_front(requestNode);
+        // request_queue.push_front(requestNode);
     }
     requestMap[address] = requestNode;
     // Main Action
@@ -48,7 +71,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     int result = write(storefd, request->data().data(), MAX_SIZE);
     if (result == -1)
     {
-        cout << "Write Successfull" << endl;
+        cout << "Write Failed" << endl;
         response->set_errcode(errno);
     }
     // Checking if the current instance is primary
@@ -68,7 +91,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
             }
             else
             {
-                request_queue.pop_back();
+                // request_queue.pop_back();
                 requestMap.erase(address);
                 cout << "Replication on Backup is successfull" << endl;
             }
@@ -76,6 +99,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
             {
                 cout << "Replication on Backup is failed after several retries" << endl;
                 cout << "Making Backup Inactive" << endl;
+                request_queue.push_front(request);
                 backupIsActive = false;
             }
         }
@@ -89,6 +113,23 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
 
 Status StoreRPCServiceImpl::SayGetLog(ServerContext *context, const LogRequest *request, LogResponse *response)
 {
+    long index = request->offset();
+    if (0 <= index && index < request_queue.size())
+    {
+        // In range
+        const WriteRequest *obj = request_queue.at(index);
+        response->set_allocated_entry(const_cast<WriteRequest *>(obj));
+        response->set_retcode(0);
+        cout << "Inside SayGetLog" << obj->address() << " " << obj->data() << endl;
+    }
+    else
+    {
+        // Done
+        request_queue.clear();
+        backupIsActive = true;
+        response->set_retcode(1);
+    }
+
     return Status::OK;
 }
 
@@ -100,13 +141,13 @@ Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest 
     response->set_leader(leader);
 
     // cout << "value "<< value <<endl;
-    int value, ret; 
-    sem_getvalue(&mutex, &value); 
+    int value, ret;
+    sem_getvalue(&mutex, &value);
     while (value == 0)
     {
-        cout<< "HeartBeat value: before" << value<< endl;
+        cout << "HeartBeat value: before" << value << endl;
         ret = sem_post(&mutex);
-        sem_getvalue(&mutex, &value); 
+        sem_getvalue(&mutex, &value);
         cout << "HeartBeat value: after" << value << endl;
     }
     return Status::OK;

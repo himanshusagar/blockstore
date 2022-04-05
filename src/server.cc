@@ -24,8 +24,11 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
     ch_args.SetMaxReceiveMessageSize(INT_MAX);
     ch_args.SetMaxSendMessageSize(INT_MAX);
 
-    StoreRPCClient storeRpc(
+     service->connOtherServer = new StoreRPCClient(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
+
+    if(!service->leader)
+        service->PerformRecovery();
 
     while(true)
     {
@@ -33,10 +36,10 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
         usleep(500);
         // cout<< "heartbeat thread: "<<service->failed_heartbeats <<endl;
         if (leader){
-            ret = storeRpc.PingBackup();
+            ret =  service->connOtherServer->PingBackup();
         }
         else{
-            ret = storeRpc.PingLeader();
+            ret =  service->connOtherServer->PingLeader();
         }
         if (ret !=0){
             service->failed_heartbeats += 1;
@@ -68,7 +71,7 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
             sem_getvalue(&(service->mutex), &value); 
             cout<< "value: after" << value<< endl;
             service->failed_heartbeats = 0;
-            storeRpc = StoreRPCClient(grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
+            service->connOtherServer = new StoreRPCClient(grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
 
             // wait over ?
             // TODO: Add logic for recovery
@@ -131,6 +134,7 @@ void run_server()
     cout << getpid() << endl;
     sem_init(&service.mutex, 0, 1);
     thread t1(heartbeat_thread, service.leader, backup_str, &service);
+
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.
