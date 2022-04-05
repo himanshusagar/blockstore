@@ -68,8 +68,9 @@ int main(int argc, char *argv[])
     }
 
     string some = "dummyData";
-    std::cout << active_server->SayWrite(20, some.data()) << std::endl;
-    std::cout << active_server->SayRead(20, some.data()) << std::endl;
+    some.resize(MAX_SIZE);
+    std::cout << "written : " << active_server->SayWrite(20, some.data()) << std::endl;
+    std::cout << "read : " << active_server->SayRead(20, some.data()) << " " << some << std::endl;
     std::cout << some << std::endl;
     //std::cout << active_server->PingLeader() << std::endl;
     //std::cout << active_server->PingBackup() << std::endl;
