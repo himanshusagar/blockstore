@@ -23,17 +23,16 @@ int main(int argc, char *argv[])
 {
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
-    std::string action = argv[1];
-    std::string action_type = argv[2];
-    std::string output_file = argv[3];
+    std::string port = argv[1];
+    std::string action = argv[2];
+    std::string action_type = argv[3];
     int count = atoi(argv[4]);
 
-    cout << count << endl;
     char read_data[MAX_SIZE];
     std::string write_data = "kaushik";
 
     signal(SIGINT, sigintHandler);
-    const std::string target_str = "10.10.1.1:50051";
+    const std::string target_str = "10.10.1.1:" + port;
     grpc::ChannelArguments ch_args;
 
     ch_args.SetMaxReceiveMessageSize(INT_MAX);
@@ -57,6 +56,5 @@ int main(int argc, char *argv[])
             storeRpc.SayWrite(dis(gen), write_data.data());
         }
     }
-
     return 0;
 }

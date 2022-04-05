@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from datetime import datetime
 import random
@@ -21,7 +21,7 @@ class Workload:
             self.simulate_sequential_loads()
 
     def simulate_random_workloads(self):
-        process = subprocess.Popen("./client" + " " + action + " " +
+        process = subprocess.Popen("./measure_client" + " " + action + " " +
                                    action_type + " " + count + " >> " + self.output_file, shell=False)
         out, err = process.communicate()
         errcode = process.returncode
