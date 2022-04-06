@@ -22,10 +22,15 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
 {
 
     const std::string target_str = address;
+    
+
     service->connOtherServer = new StoreRPCClient(
-        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args));
-    // if (!service->leader)
-    //     service->PerformRecovery();
+        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args) , 
+                                target_str);
+
+    if (!service->leader)
+        service->PerformRecovery();
+
 
     while (true)
     {
@@ -74,8 +79,9 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
             sem_getvalue(&(service->mutex), &value);
             // cout << "value: after" << value << endl;
             service->failed_heartbeats = 0;
-            service->connOtherServer = new StoreRPCClient(grpc::CreateCustomChannel(target_str, 
-                grpc::InsecureChannelCredentials(), service->ch_args));
+            service->connOtherServer = new StoreRPCClient( grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args)
+                                    , target_str);
+
 
             // wait over ?
             // TODO: Add logic for recovery
