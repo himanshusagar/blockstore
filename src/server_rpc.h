@@ -93,6 +93,7 @@ public:
     Status SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response);
     Status SayGetLog(ServerContext *context, const LogRequest *request, LogResponse *response);
     Status HeartBeat(ServerContext *context, const PingRequest *request, PongResponse *response);
+    Status SetCrashpoint(ServerContext *context, const CrashRequest *request, CrashResponse *response);
 };
 
 #endif // BLOCKSTORE_SERVER_RPC_H

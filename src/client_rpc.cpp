@@ -241,3 +241,19 @@ int StoreRPCClient::Ping(PongResponse *reply)
     return -1;
 
 }
+int StoreRPCClient::SetCrashpointClient(int n)
+{
+    CrashRequest request;
+    CrashResponse reply;
+
+    request.set_request(n);
+
+    ClientContext context;
+    Status status = stub_->SetCrashpoint(&context, request, &reply);
+    if (status.ok())
+    {
+        return reply.reply();
+    }
+    return -1;
+
+}
