@@ -17,6 +17,8 @@ project(blockstore)
 find_package(protobuf CONFIG REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 find_package(Threads REQUIRED)
+find_package(benchmark CONFIG REQUIRED)
+
 
 add_subdirectory(external)
 add_subdirectory(src)

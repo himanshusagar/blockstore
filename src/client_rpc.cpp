@@ -10,7 +10,7 @@
 
 #define MAX_SIZE 4096
 
-int StoreRPCClient::SayRead(int in, char *data)
+int StoreRPCClient::SayRead(int in, string& val)
 {
 
     struct timespec start, end, mid;
@@ -41,7 +41,9 @@ int StoreRPCClient::SayRead(int in, char *data)
     {
         if (reply.errcode() == 0)
         {
-            memcpy(data, reply.data().data(), MAX_SIZE);
+            //memcpy(val.data(), reply.data().data(), MAX_SIZE);
+            val = reply.data();
+            //hsagar : should I resize? val.resize(MAX_SIZE);
             return 0;
         }
         else
@@ -78,14 +80,27 @@ int StoreRPCClient::SayGetLog(int in, WriteRequest &obj)
     }
     return -1;
 };
-int StoreRPCClient::SayWrite(int in, const char *data)
+
+int StoreRPCClient::SayInternalReq(OP op , int in, string& val)
+{
+    if(op == OP_READ)
+        return SayRead(in , val);
+    else if(op == OP_WRITE)
+        return SayWrite(in , val);
+    return -1;
+}
+
+
+int StoreRPCClient::SayWrite(int in, string& val)
 {
     struct timespec start, end, mid;
     long long int diff;
 
     WriteRequest req;
     req.set_address(in);
-    req.set_data(data);
+    if(val.size() > MAX_SIZE)
+        val.resize(MAX_SIZE);
+    req.set_data(val.data());
 
     WriteResponse reply;
 
@@ -154,4 +169,75 @@ int StoreRPCClient::PingBackup()
         }
     }
     return -1;
+}
+
+void Client::SwitchServer()
+{
+    if(primary_server != NULL && primary_server->mIP == PRIMARY_IP)
+        Initialize(BACKUP_IP , PRIMARY_IP);
+    else
+        Initialize(PRIMARY_IP , BACKUP_IP);
+
+    while(primary_server->PingLeader() != 0)
+    {
+        sleep(5);
+        cout << "Checking isPrimary" << endl;
+        SwitchServer();
+    }
+}
+void Client::Initialize(std::string pri_str , std::string sec_str)
+{
+    pri_str = pri_str + ":" + mPort;
+    sec_str = sec_str + ":" + mPort;
+    grpc::ChannelArguments ch_args;
+    ch_args.SetMaxReceiveMessageSize(INT_MAX);
+    ch_args.SetMaxSendMessageSize(INT_MAX);
+    if(primary_server == NULL || primary_server->PingLeader() != 0)
+    {
+        primary_server = new StoreRPCClient(
+                grpc::CreateCustomChannel(pri_str, grpc::InsecureChannelCredentials(), ch_args), pri_str);
+        back_server = new StoreRPCClient(
+                    grpc::CreateCustomChannel(sec_str, grpc::InsecureChannelCredentials(), ch_args), sec_str);
+    }
+}
+
+int Client::SayReq(OP op , int in, string& val)
+{
+    int result = primary_server->SayInternalReq(op, in , val);
+    int retry = 1;
+    while (result != 0 && retry < MAX_RETRY)
+    {
+        result = primary_server->SayInternalReq(op, in , val);
+        retry = retry + 1;
+    }
+    if (retry == MAX_RETRY)
+    {
+        std::string ping_cmd = "ping -c1 -s1 " + primary_server->mIP + " > /dev/null 2>&1";
+        int server_check = std::system(ping_cmd.data());
+        if (server_check != 0)
+        {
+            SwitchServer();
+            if( primary_server->SayInternalReq(op, in , val) != 0 )
+            {
+                cout << "Both Sever Down" << endl;
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+int StoreRPCClient::Ping(PongResponse *reply)
+{
+    PingRequest req;
+
+    req.set_request("Hello, give response!");
+
+    ClientContext context;
+    Status status = stub_->HeartBeat(&context, req, reply);
+    if (status.ok())
+    {
+        return 0;
+    }
+    return -1;
+
 }

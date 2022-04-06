@@ -22,7 +22,9 @@ set_target_properties(server PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_
 target_link_libraries(client
         Threads::Threads
         gRPC::grpc++
-        p3protolib)
+        p3protolib
+        benchmark::benchmark
+        benchmark::benchmark_main)
 add_dependencies(client p3protolib)
 set_target_properties(client PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 

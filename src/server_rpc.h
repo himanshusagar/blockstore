@@ -20,9 +20,12 @@
 #include <unordered_map>
 #include <semaphore.h>
 #include "crash_points.h"
+#include <mutex>              // std::mutex, std::unique_lock
+#include <condition_variable> 
+
 
 #define MAX_FILE_SIZE 1e11
-#define pathname "/users/hsagar/dev/foo.txt"
+#define pathname "/users/hsagar/dev/akshat/foo.txt"
 
 using namespace helloworld;
 using namespace grpc;
@@ -38,12 +41,19 @@ public:
 class StoreRPCServiceImpl final : public StoreRPC::Service
 {
 
+public:
+    std::mutex mMutex;
+    std::condition_variable mCV;
+    bool mReady = false;
+
 private:
     int storefd;
 
 public:
     StoreRPCClient *connOtherServer;
-    sem_t mutex;
+    // sem_t mutex;
+    pthread_mutex_t mp;
+    pthread_cond_t cv;
     int retries = 3;
     bool leader;
     bool backupIsActive;
@@ -55,22 +65,15 @@ public:
     std::string currPhase;
     deque<const WriteRequest *> request_queue;
     unordered_map<int, Request *> requestMap;
-    StoreRPCClient *storeReplicateRpc;
+    ChannelArguments ch_args;
 
-    StoreRPCServiceImpl(string &backup_str, string &phase)
+    StoreRPCServiceImpl(string &backup_str)
     {
-        currPhase = "start";
-        const std::string target_str = "localhost:50051";
-        grpc::ChannelArguments ch_args;
-        ch_args.SetMaxReceiveMessageSize(INT_MAX);
-        ch_args.SetMaxSendMessageSize(INT_MAX);
-
-        storeReplicateRpc = new StoreRPCClient(
-            grpc::CreateCustomChannel(backup_str, grpc::InsecureChannelCredentials(), ch_args));
-
+        
         storefd = open(pathname, O_RDWR, S_IRUSR | S_IWUSR);
         if (storefd < 0)
         {
+            // if open failed, create file
             storefd = open(pathname, O_CREAT, S_IRUSR | S_IWUSR);
             if (storefd < 0)
             {
@@ -83,11 +86,9 @@ public:
             }
         }
         maxRetry = 16;
-    }
-
+    } 
+    
     int PerformRecovery();
-    int leaderShift();
-
     Status SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response);
     Status SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response);
     Status SayGetLog(ServerContext *context, const LogRequest *request, LogResponse *response);
