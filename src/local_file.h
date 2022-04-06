@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdlib.h>
 #define LOCAL_MAX_SIZE 4096
-#define MAX_LOOP_ITER 10
+#define MAX_LOOP_ITER 10000
 
 using namespace std;
 const static string sPathName = "localFile.txt";
@@ -35,13 +35,12 @@ public:
         }
         fseek(fp, 0L, SEEK_END);
         size_t sz = ftell(fp);
-        if(sz < 100)
+        if(sz < 10)
         {
             for (int i=0; i < MAX_LOOP_ITER; i++) 
             {
                 fprintf(fp, "%s\n", someData.data());
             }
-            
         }
         fclose(fp);
 
