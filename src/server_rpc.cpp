@@ -157,15 +157,18 @@ Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest 
     response->set_response("I am alive!");
     response->set_leader(leader);
 
+    pthread_mutex_lock(&mp);
+    pthread_cond_signal(&cv);
+    pthread_mutex_unlock(&mp);
     // cout << "value "<< value <<endl;
-    int value, ret;
-    sem_getvalue(&mutex, &value);
-    while (value == 0)
-    {
-        // cout << "HeartBeat value: before" << value << endl;
-        ret = sem_post(&mutex);
-        sem_getvalue(&mutex, &value);
-        // cout << "HeartBeat value: after" << value << endl;
-    }
+    // int value, ret;
+    // sem_getvalue(&mutex, &value);
+    // while (value == 0)
+    // {
+    //     // cout << "HeartBeat value: before" << value << endl;
+    //     ret = sem_post(&mutex);
+    //     sem_getvalue(&mutex, &value);
+    //     // cout << "HeartBeat value: after" << value << endl;
+    // }
     return Status::OK;
 }
