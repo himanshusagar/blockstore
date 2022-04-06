@@ -20,28 +20,29 @@ int main(int argc, char *argv[]) {
     cout << "On Port " << port << endl;
     Client clientObj(port);
     LocalFile localFile;
-
-    cout << "R/W Offset <Data> " << endl;
-
-
     int offset, limit;
-    std::string dataVal;
+    std::string writeData;
     int retCode = 0;
 
     for (int i = 0; i < MAX_LOOP_ITER; i++) {
-        dataVal = to_string(i);
-        retCode = clientObj.SayReq(OP_WRITE, i, dataVal);
+
+        writeData = std::string( 'X' , i + 1) ;
+        retCode = clientObj.SayReq(OP_WRITE, i, writeData);
         if (retCode != 0)
             cout << "Write at" << i << " failed";
-        localFile.Write(i, dataVal);
+        localFile.Write(i, writeData);
 
         std::string readRemote, readLocal;
         retCode = clientObj.SayReq(OP_READ, i, readRemote);
         if (retCode != 0)
             cout << "Read at" << i << " failed";
         localFile.Read(i, readLocal);
+
+        readLocal.resize(writeData.size());
+        readRemote.resize(writeData.size());
+
         if (localFile.checkSumFailed(readLocal, readRemote)) {
-            cout << "Check Sum Failed at" << endl;
+            cout << "Check Sum Failed at " << i << endl;
         }
     }
 
