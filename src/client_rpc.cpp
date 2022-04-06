@@ -144,7 +144,7 @@ int StoreRPCClient::PingLeader()
     {
         if (reply.leader())
         {
-            // cout << "Successful ping to leader" << endl;
+            cout << "Successful ping to leader" << endl;
             return 0;
         }
     }
@@ -171,9 +171,12 @@ int StoreRPCClient::PingBackup()
     return -1;
 }
 
+bool flag = false;
+
 void Client::SwitchServer()
 {
-    if(primary_server != NULL && primary_server->mIP == PRIMARY_IP)
+    flag = !flag;
+    if(flag)
         Initialize(BACKUP_IP , PRIMARY_IP);
     else
         Initialize(PRIMARY_IP , BACKUP_IP);
@@ -181,12 +184,13 @@ void Client::SwitchServer()
     while(primary_server->PingLeader() != 0)
     {
         sleep(5);
-        cout << "Checking isPrimary" << endl;
+        cout << "Checking PingLeader" <<  primary_server->PingLeader() << endl;
         SwitchServer();
     }
 }
 void Client::Initialize(std::string pri_str , std::string sec_str)
 {
+    //cout << "Switch p to " << pri_str << " b to" << sec_str  << endl;
     pri_str = pri_str + ":" + mPort;
     sec_str = sec_str + ":" + mPort;
     grpc::ChannelArguments ch_args;
