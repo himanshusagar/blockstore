@@ -98,7 +98,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         {
             std::string val = request->data();
             rep_result = connOtherServer->SayWrite(address, val);
-            cout << "Replicate Result Status" << rep_result << endl;
+            // cout << "Replicate Result Status" << rep_result << endl;
             retry = retry + 1;
             if (rep_result != 0)
             {
