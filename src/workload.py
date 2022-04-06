@@ -24,7 +24,7 @@ class Workload:
         output_file = "_".join([self.action, self.action_type, str(self.count), datetime.now().strftime("%d_%m_%Y_%H_%M_%S")])
         subprocess.call(['touch', output_file])
         process = subprocess.Popen("./measure_client " + str(self.port) + " " + self.action + " " +
-                                   self.action_type + " " + str(self.count) + " " + str(self.clients) + " >> " + output_file, shell=True)
+                                   self.action_type + " " + str(self.count) + " >> " + output_file, shell=True)
         out, err = process.communicate()
         errcode = process.returncode
         process.kill()
@@ -36,6 +36,12 @@ class Workload:
         lines = file.readlines()
         tot_time = 0.0
         for line in lines:
+            if line == '':
+                self.count = self.cout - 1
+                continue
+            if len(line) > 10:
+                self.count = self.cout - 1
+                continue
             tot_time += float(line)
         self.average = tot_time / self.count
         print(f"action={self.action} type={self.action_type} count={self.count} average={self.average}")            
