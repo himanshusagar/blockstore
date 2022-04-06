@@ -21,9 +21,7 @@ void sigintHandler(int sig_num)
 void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
 {
 
-    const std::string target_str = address;
-    
-
+    std::string target_str = address;
     service->connOtherServer = new StoreRPCClient(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args) , 
                                 target_str);
@@ -120,7 +118,7 @@ void run_server(std::string port, bool replication)
     service.replication = replication;
 
     service.connOtherServer = new StoreRPCClient(
-        grpc::CreateCustomChannel(backup_str, grpc::InsecureChannelCredentials(), service.ch_args));
+        grpc::CreateCustomChannel(backup_str, grpc::InsecureChannelCredentials(), service.ch_args) , backup_str);
     
     PongResponse reply;
     int ret = service.connOtherServer->Ping(&reply);
