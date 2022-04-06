@@ -37,7 +37,7 @@ int StoreRPCServiceImpl::PerformRecovery()
         }
         index++;
     }
-    cout << "Recovery Done" << endl;
+    //cout << "Recovery Done" << endl;
     return 0;
 }
 Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response)
