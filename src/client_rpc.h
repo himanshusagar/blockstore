@@ -40,6 +40,7 @@ public:
     int PingLeader();
     int PingBackup();
     int Ping(PongResponse *reply);
+    int SetCrashpointClient(int n);
 
 private:
     std::unique_ptr<StoreRPC::Stub> stub_;
@@ -67,7 +68,5 @@ public:
     void SwitchServer();
     void Initialize(std::string pri_str , std::string sec_str);
     int SayReq(OP op , int in, string& val);
-
-
 };
 #endif // BLOCKSTORE_CLIENT_RPC_H

@@ -163,3 +163,16 @@ Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest 
     pthread_mutex_unlock(&mp);
     return Status::OK;
 }
+
+Status StoreRPCServiceImpl::SetCrashpoint(ServerContext *context, const CrashRequest *request, CrashResponse *response)
+{
+    int req = request->request();
+    if (req < S_MAX){
+        CrashPoints::g_spnt = (S_POINTS)req;
+        response->set_reply(0);
+    }
+    else{
+        response->set_reply(-1);
+    }
+    return Status::OK;
+}

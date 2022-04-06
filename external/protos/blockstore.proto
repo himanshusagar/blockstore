@@ -4,6 +4,12 @@ package helloworld;
 
 
 ////////////////// Store RPC begin ////////////////
+message CrashRequest{
+  int32 request = 1;
+}
+message CrashResponse{
+  int32 reply = 1;
+}
 message PingRequest{
   string request = 1;
 }
@@ -38,6 +44,7 @@ service StoreRPC {
   rpc SayWrite (WriteRequest) returns (WriteResponse) {}
   rpc SayGetLog (LogRequest) returns (LogResponse) {}
   rpc HeartBeat (PingRequest) returns (PongResponse) {}
+  rpc SetCrashpoint (CrashRequest) returns (CrashResponse) {}
 }
 ////////////////// Store RPC end ////////////////
 
