@@ -71,12 +71,12 @@ void heartbeat_thread(string address, StoreRPCServiceImpl *service)
             cout<<"wait over"<<endl;
             // waiting till backup/leader comes back alive
             service->failed_heartbeats = 0;
+            service->backupIsActive = true;
             service->connOtherServer = new StoreRPCClient( grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args)
                                     , target_str);
             // wait over ?
             // TODO: Add logic for recovery
             // Done in server startup
-            continue;
         }
     }
 }

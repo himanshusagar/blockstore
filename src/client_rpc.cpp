@@ -81,7 +81,7 @@ int StoreRPCClient::SayGetLog(int in, WriteRequest &obj)
     return -1;
 };
 
-int StoreRPCClient::SayInternalReq(OP op , int in, string val)
+int StoreRPCClient::SayInternalReq(OP op , int in, string& val)
 {
     if(op == OP_READ)
         return SayRead(in , val);
@@ -201,7 +201,7 @@ void Client::Initialize(std::string pri_str , std::string sec_str)
     }
 }
 
-int Client::SayReq(OP op , int in, string val)
+int Client::SayReq(OP op , int in, string& val)
 {
     int result = primary_server->SayInternalReq(op, in , val);
     int retry = 1;

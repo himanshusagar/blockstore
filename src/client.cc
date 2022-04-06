@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     while(true)
     {
         char op;
-        int offset;
+        int offset , limit;
         std::string dataVal;
        
         cout << ">>" ;
@@ -40,9 +40,11 @@ int main(int argc, char *argv[])
         }
         else if( op == 'R')
         {
-            dataVal.resize(64);
+            cin >> limit;
+            dataVal.resize(MAX_SIZE);
             clientObj.SayReq( OP_READ , offset, dataVal);
-            cout << "read : "  << dataVal << endl;
+            dataVal.resize(limit);
+            cout << "read " << limit << " :"  << dataVal << endl;
         }
         else
             break;
