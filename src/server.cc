@@ -135,8 +135,8 @@ void run_server(std::string port, bool replication)
     }
     else{
         // if other node is active, then checking if it is backup or leader. 
-        service.leader = reply.leader();
-        service.backupIsActive = true & reply.leader();
+        service.leader = ! reply.leader();
+        service.backupIsActive = true & service.leader;
     }
 
     if (!service.leader){
