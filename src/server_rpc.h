@@ -51,6 +51,9 @@ private:
 
 public:
     StoreRPCClient *connOtherServer;
+    // sem_t mutex;
+    pthread_mutex_t mp;
+    pthread_cond_t cv;
     int retries = 3;
     bool leader;
     bool backupIsActive;

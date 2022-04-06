@@ -158,23 +158,9 @@ Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest 
     response->set_response("I am alive!");
     response->set_leader(leader);
 
-    //cout << "HeartBeat value: before" << endl;
-    std::unique_lock<std::mutex> lck(mMutex);
-    mReady = true;
-
-    lck.unlock();
-    mCV.notify_one();
-
-    //cout << "HeartBeat value: after" << endl;
-
-    // int value, ret;
-    // sem_getvalue(&mutex, &value);
-    // while (value == 0)
-    // {
-        
-    //     ret = sem_post(&mutex);
-    //     sem_getvalue(&mutex, &value);
-       
-    // }
+    pthread_mutex_lock(&mp);
+    pthread_cond_signal(&cv);
+    pthread_mutex_unlock(&mp);
+    // cout << "value "<< value <<endl;
     return Status::OK;
 }

@@ -63,20 +63,15 @@ void heartbeat_thread(string address, StoreRPCServiceImpl *service)
                 service->leader = true;
                 service->backupIsActive = false;
             }
-            //int value;
+            // int value;
+            pthread_mutex_lock(&service->mp);
+            pthread_cond_wait(&service->cv, &service->mp);
+            pthread_mutex_unlock(&service->mp);
+            cout<<"wait over"<<endl;
             // waiting till backup/leader comes back alive
-            //cout << "value: before" << endl;
-            
-            std::unique_lock<std::mutex> lck(service->mMutex);
-            while (!service->mReady)
-                 service->mCV.wait(lck);
-
-            //cout << "value: after" << endl;
-            service->failed_heartbeats = 0;
+             service->failed_heartbeats = 0;
             service->connOtherServer = new StoreRPCClient( grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args)
                                     , target_str);
-
-
             // wait over ?
             // TODO: Add logic for recovery
             // Done in server startup
@@ -118,6 +113,9 @@ void run_server(std::string port, bool replication)
     PongResponse reply;
     int ret = service.connOtherServer->Ping(&reply);
 
+    service.leader = false;
+    service.backupIsActive = false;
+
     if (ret!=0){
         cout<<"Cannot connect to other node."<<endl;
         // probably init stage; other node is not active yet
@@ -157,8 +155,15 @@ void run_server(std::string port, bool replication)
     builder.RegisterService(&service);
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
+<<<<<<< HEAD
     std::cout << "Server listening on " << server_address << " " << getpid() << std::endl;
 
+=======
+    std::cout << "Server listening on " << server_address << std::endl;
+    cout << getpid() << endl;
+    // sem_init(&service.mutex, 0, 1);
+    pthread_cond_init(&service.cv, NULL);
+>>>>>>> fix 1
     thread t1(heartbeat_thread, backup_str, &service);
 
     // Wait for the server to shutdown. Note that some other thread must be
