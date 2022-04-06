@@ -18,7 +18,36 @@ class Workload:
         self.clients = clients
 
     def simulate_workloads(self):
+        # Workload 1
+        self.action, self.action_type, self.count, self.clients = "write", "random", 100, 100
+        print(f"Simulating the workload action={self.action} type={self.action_type} count={self.count} ..............")
         self.simulate_workload()
+        print("Simulation Complete")
+
+        # Workload 2
+        self.action, self.action_type, self.count, self.clients = "write", "sequential", 100, 100
+        print(f"Simulating the workload action={self.action} type={self.action_type} count={self.count} ..............")
+        self.simulate_workload()
+        print("Simulation Complete")
+
+        # Workload 3
+        self.action, self.action_type, self.count, self.clients = "read", "random", 100, 100
+        print(f"Simulating the workload action={self.action} type={self.action_type} count={self.count} ..............")
+        self.simulate_workload()
+        print("Simulation Complete")
+
+        # Workload 4
+        self.action, self.action_type, self.count, self.clients = "read", "sequential", 100, 100
+        print(f"Simulating the workload action={self.action} type={self.action_type} count={self.count} ..............")
+        self.simulate_workload()
+        print("Simulation Complete")
+
+        # Workload 5
+        self.action, self.action_type, self.count, self.clients = "mixed", "random", 100, 100
+        print(f"Simulating the workload action={self.action} type={self.action_type} count={self.count} ..............")
+        self.simulate_workload()
+        print("Simulation Complete")
+
 
     def simulate_workload(self):
         output_file = "_".join([self.action, self.action_type, str(self.count), datetime.now().strftime("%d_%m_%Y_%H_%M_%S")])
@@ -37,14 +66,11 @@ class Workload:
         tot_time = 0.0
         for line in lines:
             if line == '':
-                self.count = self.cout - 1
-                continue
-            if len(line) > 10:
-                self.count = self.cout - 1
+                self.count = self.count - 1
                 continue
             tot_time += float(line)
         self.average = tot_time / self.count
-        print(f"action={self.action} type={self.action_type} count={self.count} average={self.average}")            
+        print(f"Results: average={self.average}")            
 
 
 if __name__ == '__main__':

@@ -18,7 +18,7 @@ void sigintHandler(int sig_num)
     std::exit(0);
 }
 
-void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
+void heartbeat_thread(string address, StoreRPCServiceImpl *service)
 {
 
     std::string target_str = address;
@@ -26,16 +26,12 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args) , 
                                 target_str);
 
-    if (!service->leader)
-        service->PerformRecovery();
-
-
     while (true)
     {
         int ret;
         usleep(500);
         // cout<< "heartbeat thread: "<<service->failed_heartbeats <<endl;
-        if (leader)
+        if (service->leader)
         {
             ret = service->connOtherServer->PingBackup();
         }
@@ -56,12 +52,12 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
         {
             cout << "Time to switch mode " << pthread_self() << endl;
             // switch logic
-            if (leader)
+            if (service->leader)
             {
                 // backup died. write request will add to queue
                 service->backupIsActive = false;
             }
-            if (leader != true)
+            if (service->leader != true)
             {
                 // leader died. need to change mode to leader
                 service->leader = true;
@@ -164,7 +160,7 @@ void run_server(std::string port, bool replication)
     std::unique_ptr<Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << " " << getpid() << std::endl;
     sem_init(&service.mutex, 0, 1);
-    thread t1(heartbeat_thread, service.leader, backup_str, &service);
+    thread t1(heartbeat_thread, backup_str, &service);
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.

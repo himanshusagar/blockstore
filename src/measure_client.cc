@@ -25,15 +25,20 @@ int workload_exec(std::string port, std::string action, std::string action_type,
 
     std::string write_data(4096, 'k');
     std::string read_data;
-    read_data.resize(MAX_SIZE , '0');
+    read_data.resize(MAX_SIZE, '0');
     std::string target_str = "10.10.1.1:" + port;
     grpc::ChannelArguments ch_args;
 
     ch_args.SetMaxReceiveMessageSize(INT_MAX);
     ch_args.SetMaxSendMessageSize(INT_MAX);
     StoreRPCClient storeRpc(
-        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args) , target_str);
+        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args), target_str);
 
+    std::random_device mixed_rd;
+    std::mt19937 mixed_gen(mixed_rd());
+    std::uniform_real_distribution<float> mixed_dis(0, 1);
+
+    std::string mixed_action = "read";
     if (action_type == "random")
     {
         std::random_device rd;
@@ -42,7 +47,18 @@ int workload_exec(std::string port, std::string action, std::string action_type,
 
         for (int i = 0; i < count; i++)
         {
-            if (action == "read")
+            if (action == "mixed")
+            {
+                if (mixed_dis(mixed_gen) <= 0.1)
+                {
+                    mixed_action = "read";
+                }
+                else
+                {
+                    mixed_action = "write";
+                }
+            }
+            if (action == "read" || mixed_action == "read")
             {
                 storeRpc.SayRead(dis(gen), read_data);
             }
@@ -57,7 +73,18 @@ int workload_exec(std::string port, std::string action, std::string action_type,
         std::int64_t diff = MAX_VAL / count;
         for (std::int64_t i = 0; i < count; i += diff)
         {
-            if (action == "read")
+            if (action == "mixed")
+            {
+                if (mixed_dis(mixed_gen) <= 0.1)
+                {
+                    mixed_action = "read";
+                }
+                else
+                {
+                    mixed_action = "write";
+                }
+            }
+            if (action == "read" || mixed_action == "read")
             {
                 storeRpc.SayRead(i, read_data);
             }
