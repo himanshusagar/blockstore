@@ -20,7 +20,34 @@ void sigintHandler(int sig_num)
     std::exit(0);
 }
 
-int workload_exec(std::string port, std::string action, std::string action_type, int count)
+int workload_consistency(std::string port)
+{
+    std::string write_data_1(4096, 'k');
+    std::string write_data_2(4096, 'a');
+    std::string read_data;
+    read_data.resize(MAX_SIZE, '0');
+    std::string target_str = "10.10.1.1:" + port;
+
+    grpc::ChannelArguments ch_args;
+
+    ch_args.SetMaxReceiveMessageSize(INT_MAX);
+    ch_args.SetMaxSendMessageSize(INT_MAX);
+    StoreRPCClient storeRpc(
+        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args), target_str);
+
+    storeRpc.SayWrite(10, write_data_1);
+    cout << "Write at address 10 was successfull" << endl;
+    storeRpc.SayRead(10, read_data);
+    cout << "Read the data at address 10 " << read_data << endl;
+    storeRpc.SayWrite(15, write_data_2);
+    cout << "Write at address 15 was successfull" << endl;
+    storeRpc.SayRead(10, read_data);
+    cout << "Read the data at address 15 " << read_data << endl;
+
+    return 0;
+}
+
+int workload_perf(std::string port, std::string action, std::string action_type, int count)
 {
 
     std::string write_data(4096, 'k');
@@ -110,14 +137,21 @@ int main(int argc, char *argv[])
 
     std::thread t[thread_count];
 
+    if (action == "consistency")
+    {
+        workload_consistency(port);
+        return 0;
+    }
+
     for (int i = 0; i < thread_count; i++)
     {
-        t[i] = std::thread(workload_exec, port, action, action_type, count);
+        t[i] = std::thread(workload_perf, port, action, action_type, count);
     }
 
     for (int i = 0; i < thread_count; i++)
     {
         t[i].join();
     }
+
     return 0;
 }
