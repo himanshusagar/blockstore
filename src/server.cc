@@ -63,15 +63,15 @@ void heartbeat_thread(string address, StoreRPCServiceImpl *service)
                 service->leader = true;
                 service->backupIsActive = false;
             }
-            int value;
+            //int value;
             // waiting till backup/leader comes back alive
-            cout << "value: before" << endl;
+            //cout << "value: before" << endl;
             
             std::unique_lock<std::mutex> lck(service->mMutex);
             while (!service->mReady)
                  service->mCV.wait(lck);
 
-            cout << "value: after" << endl;
+            //cout << "value: after" << endl;
             service->failed_heartbeats = 0;
             service->connOtherServer = new StoreRPCClient( grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args)
                                     , target_str);
@@ -158,7 +158,7 @@ void run_server(std::string port, bool replication)
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << " " << getpid() << std::endl;
-    sem_init(&service.mutex, 0, 1);
+
     thread t1(heartbeat_thread, backup_str, &service);
 
     // Wait for the server to shutdown. Note that some other thread must be
