@@ -161,6 +161,5 @@ Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest 
     pthread_mutex_lock(&mp);
     pthread_cond_signal(&cv);
     pthread_mutex_unlock(&mp);
-    // cout << "value "<< value <<endl;
     return Status::OK;
 }

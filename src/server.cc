@@ -29,7 +29,8 @@ void heartbeat_thread(string address, StoreRPCServiceImpl *service)
     while (true)
     {
         int ret;
-        usleep(500);
+        // usleep(500);
+        sleep(2);
         // cout<< "heartbeat thread: "<<service->failed_heartbeats <<endl;
         if (service->leader)
         {
@@ -69,7 +70,11 @@ void heartbeat_thread(string address, StoreRPCServiceImpl *service)
             pthread_mutex_unlock(&service->mp);
             cout<<"wait over"<<endl;
             // waiting till backup/leader comes back alive
+<<<<<<< HEAD
              service->failed_heartbeats = 0;
+=======
+            service->failed_heartbeats = 0;
+>>>>>>> clean
             service->connOtherServer = new StoreRPCClient( grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args)
                                     , target_str);
             // wait over ?
