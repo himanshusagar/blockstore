@@ -89,7 +89,7 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
     }
 }
 
-void run_server(std::string port)
+void run_server(std::string port, bool replication)
 {
 
     string hostbuffer;
@@ -114,6 +114,7 @@ void run_server(std::string port)
 
     StoreRPCServiceImpl service(backup_str, phase);
     service.failed_heartbeats = 0;
+    service.replication = replication;
     if (hostbuffer[4] == '0')
     {
         service.leader = true;
@@ -154,14 +155,14 @@ int main(int argc, char *argv[])
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
     std::string port = argv[1];
-
-    if(argc >= 3)
+    bool replication = true;
+    if (argc >= 3)
     {
         int crashP = std::stoi(argv[2]);
-        if( (S_POINTS)crashP < S_MAX)
-            CrashPoints::g_spnt =  (S_POINTS)crashP;
+        if ((S_POINTS)crashP < S_MAX)
+            CrashPoints::g_spnt = (S_POINTS)crashP;
         else
             std::cout << "Server Unable to set crash point" << endl;
     }
-    run_server(port);
+    run_server(port, replication);
 }
