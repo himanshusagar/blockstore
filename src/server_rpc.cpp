@@ -90,7 +90,8 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     {
         while (retry < maxRetry && rep_result != 0)
         {
-            rep_result = storeReplicateRpc->SayWrite(address, request->data().data());
+            std::string val = request->data();
+            rep_result = storeReplicateRpc->SayWrite(address, val);
             cout << "Replicate Result Status" << rep_result << endl;
             retry = retry + 1;
             if (rep_result != 0)

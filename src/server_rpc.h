@@ -66,7 +66,7 @@ public:
         ch_args.SetMaxSendMessageSize(INT_MAX);
 
         storeReplicateRpc = new StoreRPCClient(
-            grpc::CreateCustomChannel(backup_str, grpc::InsecureChannelCredentials(), ch_args));
+            grpc::CreateCustomChannel(backup_str, grpc::InsecureChannelCredentials(), ch_args) , backup_str);
 
         storefd = open(pathname, O_RDWR, S_IRUSR | S_IWUSR);
         if (storefd < 0)

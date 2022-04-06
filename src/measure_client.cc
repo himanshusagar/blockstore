@@ -24,14 +24,15 @@ int workload_exec(std::string port, std::string action, std::string action_type,
 {
 
     std::string write_data(4096, 'k');
-    char read_data[MAX_SIZE];
-    const std::string target_str = "10.10.1.1:" + port;
+    std::string read_data;
+    read_data.resize(MAX_SIZE , '0');
+    std::string target_str = "10.10.1.1:" + port;
     grpc::ChannelArguments ch_args;
 
     ch_args.SetMaxReceiveMessageSize(INT_MAX);
     ch_args.SetMaxSendMessageSize(INT_MAX);
     StoreRPCClient storeRpc(
-        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args));
+        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args) , target_str);
 
     if (action_type == "random")
     {
@@ -47,7 +48,7 @@ int workload_exec(std::string port, std::string action, std::string action_type,
             }
             else
             {
-                storeRpc.SayWrite(dis(gen), write_data.data());
+                storeRpc.SayWrite(dis(gen), write_data);
             }
         }
     }
@@ -62,7 +63,7 @@ int workload_exec(std::string port, std::string action, std::string action_type,
             }
             else
             {
-                storeRpc.SayWrite(i, write_data.data());
+                storeRpc.SayWrite(i, write_data);
             }
         }
     }
