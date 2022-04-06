@@ -36,6 +36,12 @@ class Workload:
         lines = file.readlines()
         tot_time = 0.0
         for line in lines:
+            if line == '':
+                self.count = self.cout - 1
+                continue
+            if len(line) > 10:
+                self.count = self.cout - 1
+                continue
             tot_time += float(line)
         self.average = tot_time / self.count
         print(f"action={self.action} type={self.action_type} count={self.count} average={self.average}")            
