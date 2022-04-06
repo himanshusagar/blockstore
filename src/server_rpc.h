@@ -59,7 +59,6 @@ public:
 
     StoreRPCServiceImpl(string &backup_str)
     {
-        
         storefd = open(pathname, O_RDWR, S_IRUSR | S_IWUSR);
         if (storefd < 0)
         {
