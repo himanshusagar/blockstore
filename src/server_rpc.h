@@ -25,7 +25,7 @@
 
 
 #define MAX_FILE_SIZE 1e11
-#define pathname "/users/hsagar/dev/akshat/foo.txt"
+#define pathname "~/dev/foo.txt"
 
 using namespace helloworld;
 using namespace grpc;
