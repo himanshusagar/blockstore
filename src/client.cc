@@ -1,5 +1,6 @@
 #include <signal.h>
 #include "client_rpc.h"
+#include <benchmark/benchmark.h>
 
 #define MAX_SIZE 4096
 
@@ -13,11 +14,11 @@ void sigintHandler(int sig_num)
     std::exit(0);
 }
 
-int main(int argc, char *argv[])
+int run_client()
 {
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
-    std::string port = argv[1];
+    std::string port = "5555";
 
     std::string pri_str = "10.10.1.1:" + port;
     std::string sec_str = "10.10.1.2:" + port;
@@ -32,10 +33,10 @@ int main(int argc, char *argv[])
     ch_args.SetMaxSendMessageSize(INT_MAX);
 
     StoreRPCClient storeRpc1(
-        grpc::CreateCustomChannel(pri_str, grpc::InsecureChannelCredentials(), ch_args));
+            grpc::CreateCustomChannel(pri_str, grpc::InsecureChannelCredentials(), ch_args));
 
     StoreRPCClient storeRpc2(
-        grpc::CreateCustomChannel(sec_str, grpc::InsecureChannelCredentials(), ch_args));
+            grpc::CreateCustomChannel(sec_str, grpc::InsecureChannelCredentials(), ch_args));
 
     StoreRPCClient *active_server;
     active_server = &storeRpc1;
@@ -50,7 +51,7 @@ int main(int argc, char *argv[])
     {
         result = active_server->SayWrite(92, name.data());
         retry = retry + 1;
-        cout << "Retrying" << endl;
+        //cout << "Retrying" << endl;
     }
     if (retry == max_retry)
     {
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
         int server_check = std::system(ping_cmd.data());
         if (server_check != 0)
         {
-            cout << "Changing the Primary Server" << endl;
+            //cout << "Changing the Primary Server" << endl;
             if (active_server == &storeRpc1)
             {
                 active_server = &storeRpc2;
@@ -81,3 +82,26 @@ int main(int argc, char *argv[])
     // std::cout << active_server->PingBackup() << std::endl;
     return 0;
 }
+
+static void BM_SomeFunction(benchmark::State& state) {
+    // Perform setup here
+    for (auto _ : state) {
+        // This code gets timed
+        run_client();
+    }
+}
+
+//int main(int argc, char *argv[])
+//{
+//    g_argc = argc;
+//    g_argv = argv;
+//
+//
+//
+//
+//    //run_client(argc, argv);
+//    return 0;
+//}
+
+BENCHMARK(BM_SomeFunction);
+BENCHMARK_MAIN();
