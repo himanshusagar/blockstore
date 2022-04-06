@@ -115,7 +115,8 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
             cout << "Replication on Backup is failed after several retries" << endl;
             cout << "Making Backup Inactive" << endl;
             auto req_copy = request;
-            request_queue.push_front(req_copy);
+
+            request_queue.push_back(req_copy);
             backupIsActive = false;
         }
         // Sending to the primary backup
