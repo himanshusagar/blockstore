@@ -41,6 +41,7 @@ Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *r
     response->set_data(buff);
     if (result == -1)
     {
+        cout << "Read Failed" << endl;
         response->set_errcode(errno);
     }
     else
@@ -71,7 +72,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     }
     requestMap[address] = requestNode;
     // Main Action
-    cout << "Write" << endl;
+    // cout << "Write" << endl;
     int result = write(storefd, request->data().data(), MAX_SIZE);
     if (result == -1)
     {

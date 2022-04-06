@@ -4,6 +4,7 @@
 
 #include "client_rpc.h"
 #include <time.h>
+#include <stdio.h>
 
 #define BILLION (long long int)1000000000
 
@@ -32,7 +33,8 @@ int StoreRPCClient::SayRead(int in, char *data)
     clock_gettime(CLOCK_MONOTONIC, &end);
 
     diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
-    std::cout << diff << std::endl;
+    printf("%lld\n", diff); //<< std::endl;
+    fflush( stdout );
 
     // Act upon its status.
     if (status.ok())
