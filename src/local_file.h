@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdlib.h>
 #define LOCAL_MAX_SIZE 4096
-#define MAX_LOOP_ITER
+#define MAX_LOOP_ITER 10
 
 using namespace std;
 const static string sPathName = "localFile.txt";
@@ -28,7 +28,7 @@ public:
     {
         localFD = open(sPathName, O_RDWR, S_IRUSR | S_IWUSR);
         std::string someData(LOCAL_MAX_SIZE , '0');
-        for (int i = 0; i < MAX_LOOP_ITER; ++i) {
+        for (int i = 0; i < MAX_LOOP_ITER ; ++i) {
             write(localFD , someData.data() , LOCAL_MAX_SIZE);
         }
     }
