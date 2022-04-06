@@ -157,15 +157,10 @@ void run_server(std::string port, bool replication)
     builder.RegisterService(&service);
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
-<<<<<<< HEAD
-    std::cout << "Server listening on " << server_address << " " << getpid() << std::endl;
-
-=======
     std::cout << "Server listening on " << server_address << std::endl;
     cout << getpid() << endl;
     // sem_init(&service.mutex, 0, 1);
     pthread_cond_init(&service.cv, NULL);
->>>>>>> fix 1
     thread t1(heartbeat_thread, backup_str, &service);
 
     // Wait for the server to shutdown. Note that some other thread must be
