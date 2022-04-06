@@ -41,6 +41,7 @@ Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *r
     response->set_data(buff);
     if (result == -1)
     {
+        cout << "Read Failed" << endl;
         response->set_errcode(errno);
     }
     else
@@ -52,7 +53,7 @@ Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *r
 
 Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response)
 {
-    if(leader)
+    if (leader)
         CrashPoints::serverCrash(PRIMARY_AFTER_WRITE_REQ_RECV);
     else
         CrashPoints::serverCrash(BACKUP_AFTER_WRITE_REQ_RECV);
@@ -71,7 +72,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     }
     requestMap[address] = requestNode;
     // Main Action
-    cout << "Write" << endl;
+    // cout << "Write" << endl;
     int result = write(storefd, request->data().data(), MAX_SIZE);
     if (result == -1)
     {
@@ -79,13 +80,13 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         response->set_errcode(errno);
     }
 
-    if(leader)
+    if (leader)
         CrashPoints::serverCrash(PRIMARY_AFTER_WRITE);
     else
         CrashPoints::serverCrash(BACKUP_AFTER_WRITE);
 
     // Checking if the current instance is primary
-    if (leader && backupIsActive)
+    if (leader && backupIsActive && replication)
     {
         while (retry < maxRetry && rep_result != 0)
         {

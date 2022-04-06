@@ -22,7 +22,7 @@
 #include "crash_points.h"
 
 #define MAX_FILE_SIZE 1e11
-#define pathname "/users/kkaushik/dev/foo.txt"
+#define pathname "/users/hsagar/dev/foo.txt"
 
 using namespace helloworld;
 using namespace grpc;
@@ -51,6 +51,7 @@ public:
     int failed_heartbeats;
     int maxRetry;
     int hostname = gethostname(hostbuffer, 256);
+    bool replication;
     std::string currPhase;
     deque<const WriteRequest *> request_queue;
     unordered_map<int, Request *> requestMap;
