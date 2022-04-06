@@ -162,8 +162,7 @@ void run_server(std::string port, bool replication)
     builder.RegisterService(&service);
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
-    std::cout << "Server listening on " << server_address << std::endl;
-    cout << getpid() << endl;
+    std::cout << "Server listening on " << server_address << " " << getpid() << std::endl;
     sem_init(&service.mutex, 0, 1);
     thread t1(heartbeat_thread, service.leader, backup_str, &service);
 

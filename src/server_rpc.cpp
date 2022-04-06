@@ -43,9 +43,10 @@ int StoreRPCServiceImpl::PerformRecovery()
 Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response)
 {
     int address = request->address();
-    char buff[MAX_SIZE];
+    string buff;
+    buff.resize(4096 , '0');
     lseek(storefd, address, SEEK_SET);
-    int result = read(storefd, buff, MAX_SIZE);
+    int result = read(storefd, buff.data(), MAX_SIZE);
     response->set_data(buff);
     if (result == -1)
     {
@@ -101,7 +102,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         {
             std::string val = request->data();
             rep_result = connOtherServer->SayWrite(address, val);
-            // cout << "Replicate Result Status" << rep_result << endl;
+            cout << "Replicate Result Status" << rep_result << endl;
             retry = retry + 1;
             if (rep_result != 0)
             {

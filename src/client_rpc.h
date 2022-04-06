@@ -35,7 +35,7 @@ public:
 
     int SayRead(int in, string& val);
     int SayWrite(int in, string& val);
-    int SayInternalReq(OP op , int in, string val);
+    int SayInternalReq(OP op , int in, string& val);
     int SayGetLog(int in, WriteRequest& obj);
     int PingLeader();
     int PingBackup();
@@ -66,7 +66,7 @@ public:
     }
     void SwitchServer();
     void Initialize(std::string pri_str , std::string sec_str);
-    int SayReq(OP op , int in, string val);
+    int SayReq(OP op , int in, string& val);
 
 
 };
