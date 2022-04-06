@@ -96,7 +96,8 @@ int StoreRPCClient::SayWrite(int in, const char *data)
     clock_gettime(CLOCK_MONOTONIC, &end);
 
     diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
-    std::cout << diff << std::endl;
+    printf("%lld\n", diff); //<< std::endl;
+    fflush( stdout );
     if (status.ok())
     {
         if (reply.errcode() == 0)
