@@ -19,26 +19,30 @@ int main(int argc, char *argv[])
     // "ctrl-C handler"
     signal(SIGINT, sigintHandler);
     std::string port = argv[1];
+    cout << "On Port " << port << endl;
     Client clientObj(port);
+    cout << "R/W Offset <Data> " << endl;
 
     while(true)
     {
         char op;
         int offset;
         std::string dataVal;
-        cout << "Example R/W Offset <Data>";
+       
+        cout << ">>" ;
         cin>> op;
         cin>> offset;
         if(op == 'W')
         {
             cin >> dataVal;
             clientObj.SayReq( OP_WRITE , offset, dataVal);
+            dataVal.clear();
         }
         else if( op == 'R')
         {
             dataVal.resize(64);
             clientObj.SayReq( OP_READ , offset, dataVal);
-            cout << dataVal << endl;
+            cout << "read : "  << dataVal << endl;
         }
         else
             break;

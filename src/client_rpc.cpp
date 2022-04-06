@@ -177,10 +177,12 @@ void Client::SwitchServer()
         Initialize(BACKUP_IP , PRIMARY_IP);
     else
         Initialize(PRIMARY_IP , BACKUP_IP);
+
     while(primary_server->PingLeader() != 0)
     {
-        sleep(2);
+        sleep(5);
         cout << "Checking isPrimary" << endl;
+        SwitchServer();
     }
 }
 void Client::Initialize(std::string pri_str , std::string sec_str)

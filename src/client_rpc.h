@@ -47,8 +47,8 @@ private:
 
 class Client
 {
-    const std::string PRIMARY_IP = "10.10.1.1:";
-    const std::string BACKUP_IP = "10.10.1.2:";
+    const std::string PRIMARY_IP = "10.10.1.1";
+    const std::string BACKUP_IP = "10.10.1.2";
 
     StoreRPCClient *primary_server;
     StoreRPCClient *back_server;
