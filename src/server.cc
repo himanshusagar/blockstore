@@ -26,6 +26,7 @@ void heartbeat_thread(string address, StoreRPCServiceImpl *service)
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args) , 
                                 target_str);
 
+    cout << "Other Conn for recovery" << target_str << endl;
 //    if (!service->leader){
         // if startup is in backup mode, perform recovery.
         service->PerformRecovery();
