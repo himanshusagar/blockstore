@@ -24,7 +24,7 @@ class Workload:
         output_file = "_".join([self.action, self.action_type, str(self.count), datetime.now().strftime("%d_%m_%Y_%H_%M_%S")])
         subprocess.call(['touch', output_file])
         process = subprocess.Popen("./measure_client " + str(self.port) + " " + self.action + " " +
-                                   self.action_type + " " + str(self.count) + " >> " + output_file, shell=True)
+                                   self.action_type + " " + str(self.count) + " " + str(self.clients) + " >> " + output_file, shell=True)
         out, err = process.communicate()
         errcode = process.returncode
         process.kill()
