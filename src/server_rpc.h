@@ -22,7 +22,7 @@
 #include "crash_points.h"
 
 #define MAX_FILE_SIZE 1e11
-#define pathname "/users/hsagar/dev/foo.txt"
+#define pathname "/users/hsagar/dev/akshat/foo.txt"
 
 using namespace helloworld;
 using namespace grpc;

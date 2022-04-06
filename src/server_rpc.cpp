@@ -74,10 +74,6 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     requestNode->address = address;
     requestNode->data = request->data().data();
     lseek(storefd, address, SEEK_SET);
-    if (leader)
-    {
-        // request_queue.push_front(requestNode);
-    }
     // requestMap[address] = requestNode;
     // Main Action
     // cout << "Write" << endl;
