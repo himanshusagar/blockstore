@@ -26,10 +26,10 @@ void heartbeat_thread(string address, StoreRPCServiceImpl *service)
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args) , 
                                 target_str);
 
-    if (!service->leader){
+//    if (!service->leader){
         // if startup is in backup mode, perform recovery.
         service->PerformRecovery();
-    }
+  //  }
 
     while (true)
     {

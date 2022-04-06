@@ -14,11 +14,6 @@ int StoreRPCServiceImpl::PerformRecovery()
     WriteRequest entry;
     int index = 0;
 
-    if (leader){
-        // if already leader. not pulling
-        return 0;
-    }
-
     while (connOtherServer->SayGetLog(index, entry) == 0)
     {
         cout << "Inside PerformRecovery " << index << " " << entry.address() << " " << entry.data() << endl;
