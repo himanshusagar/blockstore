@@ -144,7 +144,7 @@ int StoreRPCClient::PingLeader()
     {
         if (reply.leader())
         {
-            cout << "Successful ping to leader" << endl;
+            //cout << "Successful ping to leader" << endl;
             return 0;
         }
     }
