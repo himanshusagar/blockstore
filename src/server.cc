@@ -21,18 +21,16 @@ void sigintHandler(int sig_num)
 void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
 {
 
-    std::string target_str = address;
-    grpc::ChannelArguments ch_args;
-
-    ch_args.SetMaxReceiveMessageSize(INT_MAX);
-    ch_args.SetMaxSendMessageSize(INT_MAX);
+    const std::string target_str = address;
+    
 
     service->connOtherServer = new StoreRPCClient(
-        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args) , 
+        grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args) , 
                                 target_str);
 
     if (!service->leader)
         service->PerformRecovery();
+
 
     while (true)
     {
@@ -74,18 +72,20 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
             int value;
             // waiting till backup/leader comes back alive
             sem_getvalue(&(service->mutex), &value);
-            cout << "value: before" << value << endl;
+            // cout << "value: before" << value << endl;
             sem_wait(&(service->mutex)); // 1 -> 0
             sem_wait(&(service->mutex)); // 0 -> -1
 
             sem_getvalue(&(service->mutex), &value);
-            cout << "value: after" << value << endl;
+            // cout << "value: after" << value << endl;
             service->failed_heartbeats = 0;
-            service->connOtherServer = new StoreRPCClient( grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args)
+            service->connOtherServer = new StoreRPCClient( grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args)
                                     , target_str);
+
 
             // wait over ?
             // TODO: Add logic for recovery
+            // Done in server startup
             continue;
         }
     }
@@ -99,7 +99,6 @@ void run_server(std::string port, bool replication)
     string phase;
     string server_address;
     hostbuffer.resize(256);
-    phase = "start";
     int hostname = gethostname(hostbuffer.data(), hostbuffer.size());
     if (hostbuffer[4] == '0')
     {
@@ -114,18 +113,41 @@ void run_server(std::string port, bool replication)
     cout << "curr host is " << hostbuffer << endl;
     cout << "backup host is " << backup_str << endl;
 
-    StoreRPCServiceImpl service(backup_str, phase);
+    StoreRPCServiceImpl service(backup_str);
+    service.ch_args.SetMaxReceiveMessageSize(INT_MAX);
+    service.ch_args.SetMaxSendMessageSize(INT_MAX);
     service.failed_heartbeats = 0;
     service.replication = replication;
-    if (hostbuffer[4] == '0')
-    {
-        service.leader = true;
-        service.backupIsActive = true;
+
+    service.connOtherServer = new StoreRPCClient(
+        grpc::CreateCustomChannel(backup_str, grpc::InsecureChannelCredentials(), service.ch_args));
+    
+    PongResponse reply;
+    int ret = service.connOtherServer->Ping(&reply);
+
+    if (ret!=0){
+        cout<<"Cannot connect to other node."<<endl;
+        // probably init stage; other node is not active yet
+        if (hostbuffer[4] == '0')
+        {
+            service.leader = true;
+            service.backupIsActive = true;
+        }
+        else
+        {
+            service.leader = false;
+            service.backupIsActive = false;
+        }
     }
-    else
-    {
-        service.leader = false;
-        service.backupIsActive = false;
+    else{
+        // if other node is active, then checking if it is backup or leader. 
+        service.leader = ! reply.leader();
+        service.backupIsActive = true & service.leader;
+    }
+
+    if (!service.leader){
+        // if startup is in backup mode, perform recovery.
+        service.PerformRecovery();
     }
 
     std::cout << hostbuffer << "  " << service.leader << std::endl;

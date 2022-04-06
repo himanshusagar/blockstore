@@ -226,3 +226,18 @@ int Client::SayReq(OP op , int in, string val)
     }
     return 0;
 }
+int StoreRPCClient::Ping(PongResponse *reply)
+{
+    PingRequest req;
+
+    req.set_request("Hello, give response!");
+
+    ClientContext context;
+    Status status = stub_->HeartBeat(&context, req, reply);
+    if (status.ok())
+    {
+        return 0;
+    }
+    return -1;
+
+}

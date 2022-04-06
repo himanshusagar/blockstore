@@ -39,6 +39,7 @@ public:
     int SayGetLog(int in, WriteRequest& obj);
     int PingLeader();
     int PingBackup();
+    int Ping(PongResponse *reply);
 
 private:
     std::unique_ptr<StoreRPC::Stub> stub_;
