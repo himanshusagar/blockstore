@@ -20,6 +20,9 @@
 #include <unordered_map>
 #include <semaphore.h>
 #include "crash_points.h"
+#include <mutex>              // std::mutex, std::unique_lock
+#include <condition_variable> 
+
 
 #define MAX_FILE_SIZE 1e11
 #define pathname "/users/hsagar/dev/foo.txt"
@@ -37,6 +40,11 @@ public:
 
 class StoreRPCServiceImpl final : public StoreRPC::Service
 {
+
+public:
+    std::mutex mMutex;
+    std::condition_variable mCV;
+    bool mReady = false;
 
 private:
     int storefd;

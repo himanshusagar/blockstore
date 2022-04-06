@@ -69,13 +69,13 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
             }
             int value;
             // waiting till backup/leader comes back alive
-            sem_getvalue(&(service->mutex), &value);
-            // cout << "value: before" << value << endl;
-            sem_wait(&(service->mutex)); // 1 -> 0
-            sem_wait(&(service->mutex)); // 0 -> -1
+            cout << "value: before" << endl;
+            
+            std::unique_lock<std::mutex> lck(service->mMutex);
+            while (!service->mReady)
+                 service->mCV.wait(lck);
 
-            sem_getvalue(&(service->mutex), &value);
-            // cout << "value: after" << value << endl;
+            cout << "value: after" << endl;
             service->failed_heartbeats = 0;
             service->connOtherServer = new StoreRPCClient( grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args)
                                     , target_str);
@@ -84,7 +84,6 @@ void heartbeat_thread(bool leader, string address, StoreRPCServiceImpl *service)
             // wait over ?
             // TODO: Add logic for recovery
             // Done in server startup
-            continue;
         }
     }
 }
