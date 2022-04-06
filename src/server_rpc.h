@@ -51,6 +51,7 @@ public:
     int failed_heartbeats;
     int maxRetry;
     int hostname = gethostname(hostbuffer, 256);
+    bool replication;
     std::string currPhase;
     deque<const WriteRequest *> request_queue;
     unordered_map<int, Request *> requestMap;
