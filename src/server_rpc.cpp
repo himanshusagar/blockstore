@@ -13,6 +13,12 @@ int StoreRPCServiceImpl::PerformRecovery()
 {
     WriteRequest entry;
     int index = 0;
+
+    if (leader){
+        // if already leader. not pulling
+        return 0;
+    }
+
     while (connOtherServer->SayGetLog(index, entry) == 0)
     {
         cout << "Inside PerformRecovery " << index << " " << entry.address() << " " << entry.data() << endl;
@@ -25,12 +31,14 @@ int StoreRPCServiceImpl::PerformRecovery()
         int result = write(storefd, entry.data().data(), MAX_SIZE);
         if (result == -1)
         {
-            cout << "Write Failed" << endl;
-            break;
+            cout << "Write Failed. Recovery stopped." << endl;
+            return -1;
+            // break;
         }
         index++;
     }
     cout << "Recovery Done" << endl;
+    return 0;
 }
 Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response)
 {
@@ -70,7 +78,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     {
         // request_queue.push_front(requestNode);
     }
-    requestMap[address] = requestNode;
+    // requestMap[address] = requestNode;
     // Main Action
     // cout << "Write" << endl;
     int result = write(storefd, request->data().data(), MAX_SIZE);
@@ -78,8 +86,9 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     {
         cout << "Write Failed" << endl;
         response->set_errcode(errno);
+        return Status::OK;
     }
-
+    
     if (leader)
         CrashPoints::serverCrash(PRIMARY_AFTER_WRITE);
     else
@@ -90,34 +99,33 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     {
         while (retry < maxRetry && rep_result != 0)
         {
-            rep_result = storeReplicateRpc->SayWrite(address, request->data().data());
-            cout << "Replicate Result Status" << rep_result << endl;
+            rep_result = connOtherServer->SayWrite(address, request->data().data());
+            // cout << "Replicate Result Status" << rep_result << endl;
             retry = retry + 1;
             if (rep_result != 0)
             {
                 cout << rep_result << endl;
                 response->set_errcode(rep_result);
-
                 cout << "Replication on Backup failed and will be retried" << endl;
+                continue;
             }
             else
             {
                 CrashPoints::serverCrash(PRIMARY_AFTER_ACK_FROM_B);
                 // request_queue.pop_back();
-                requestMap.erase(address);
-                cout << "Replication on Backup is successfull" << endl;
+                // requestMap.erase(address);
+                // cout << "Replication on Backup is successfull" << endl;
             }
-            if (rep_result != 0)
-            {
-                cout << "Replication on Backup is failed after several retries" << endl;
-                cout << "Making Backup Inactive" << endl;
-                request_queue.push_front(request);
-                backupIsActive = false;
-            }
+        }
+        if (rep_result != 0)
+        {
+            cout << "Replication on Backup is failed after several retries" << endl;
+            cout << "Making Backup Inactive" << endl;
+            request_queue.push_front(request);
+            backupIsActive = false;
         }
         // Sending to the primary backup
     }
-
     response->set_errcode(0);
 
     return Status::OK;
@@ -157,10 +165,10 @@ Status StoreRPCServiceImpl::HeartBeat(ServerContext *context, const PingRequest 
     sem_getvalue(&mutex, &value);
     while (value == 0)
     {
-        cout << "HeartBeat value: before" << value << endl;
+        // cout << "HeartBeat value: before" << value << endl;
         ret = sem_post(&mutex);
         sem_getvalue(&mutex, &value);
-        cout << "HeartBeat value: after" << value << endl;
+        // cout << "HeartBeat value: after" << value << endl;
     }
     return Status::OK;
 }

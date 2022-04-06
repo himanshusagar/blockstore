@@ -55,22 +55,15 @@ public:
     std::string currPhase;
     deque<const WriteRequest *> request_queue;
     unordered_map<int, Request *> requestMap;
-    StoreRPCClient *storeReplicateRpc;
+    ChannelArguments ch_args;
 
-    StoreRPCServiceImpl(string &backup_str, string &phase)
+    StoreRPCServiceImpl(string &backup_str)
     {
-        currPhase = "start";
-        const std::string target_str = "localhost:50051";
-        grpc::ChannelArguments ch_args;
-        ch_args.SetMaxReceiveMessageSize(INT_MAX);
-        ch_args.SetMaxSendMessageSize(INT_MAX);
-
-        storeReplicateRpc = new StoreRPCClient(
-            grpc::CreateCustomChannel(backup_str, grpc::InsecureChannelCredentials(), ch_args));
-
+        
         storefd = open(pathname, O_RDWR, S_IRUSR | S_IWUSR);
         if (storefd < 0)
         {
+            // if open failed, create file
             storefd = open(pathname, O_CREAT, S_IRUSR | S_IWUSR);
             if (storefd < 0)
             {
@@ -83,11 +76,9 @@ public:
             }
         }
         maxRetry = 16;
-    }
-
+    } 
+    
     int PerformRecovery();
-    int leaderShift();
-
     Status SayRead(ServerContext *context, const ReadRequest *request, ReadResponse *response);
     Status SayWrite(ServerContext *context, const WriteRequest *request, WriteResponse *response);
     Status SayGetLog(ServerContext *context, const LogRequest *request, LogResponse *response);
