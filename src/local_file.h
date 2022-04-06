@@ -26,7 +26,7 @@ class LocalFile
 public:
     LocalFile()
     {
-        localFD = open(sPathName, O_RDWR, S_IRUSR | S_IWUSR);
+        localFD = open(sPathName.c_str(), O_RDWR, S_IRUSR | S_IWUSR);
         std::string someData(LOCAL_MAX_SIZE , '0');
         for (int i = 0; i < MAX_LOOP_ITER ; ++i) {
             write(localFD , someData.data() , LOCAL_MAX_SIZE);

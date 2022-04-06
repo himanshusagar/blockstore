@@ -1,6 +1,5 @@
 #include <signal.h>
 #include "client_rpc.h"
-#include <benchmark/benchmark.h>
 #include "local_file.h"
 
 
