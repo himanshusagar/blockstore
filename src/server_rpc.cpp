@@ -5,13 +5,15 @@
 #include "server_rpc.h"
 #include <unistd.h>
 
+#include <utility>
+
 #define MAX_SIZE 4096
 
 using grpc::Status;
 
 int StoreRPCServiceImpl::PerformRecovery()
 {
-    WriteRequest entry;
+    LogEntry entry;
     int index = 0;
 
     while (connOtherServer->SayGetLog(index, entry) == 0)
@@ -64,13 +66,8 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
 
     int address = request->address();
     int retry = 0;
-    Request *requestNode = NULL;
-    requestNode = new Request();
     int rep_result = -1;
-    requestNode->address = address;
-    requestNode->data = request->data().data();
     lseek(storefd, address, SEEK_SET);
-    // requestMap[address] = requestNode;
     // Main Action
     // cout << "Write" << endl;
     int result = write(storefd, request->data().data(), MAX_SIZE);
@@ -106,7 +103,6 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
             //{
                 CrashPoints::serverCrash(PRIMARY_AFTER_ACK_FROM_B);
                 // request_queue.pop_back();
-                // requestMap.erase(address);
                 // cout << "Replication on Backup is successfull" << endl;
            // }
         }
@@ -114,9 +110,8 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         {
             cout << "Replication on Backup is failed after several retries" << endl;
             cout << "Making Backup Inactive" << endl;
-            auto req_copy = request;
-
-            request_queue.push_back(req_copy);
+            LogEntry entry(request->address() , request->data() );
+            request_queue.push_back(entry);
             backupIsActive = false;
         }
         // Sending to the primary backup
@@ -132,10 +127,11 @@ Status StoreRPCServiceImpl::SayGetLog(ServerContext *context, const LogRequest *
     if (0 <= index && index < request_queue.size())
     {
         // In range
-        const WriteRequest *obj = request_queue.at(index);
-        response->set_allocated_entry(const_cast<WriteRequest *>(obj));
+        const LogEntry entry = request_queue.at(index);
+        response->set_address(entry.address());
+        response->set_data(entry.data());
         response->set_retcode(0);
-        cout << "Inside SayGetLog" << obj->address() << " " << obj->data() << endl;
+        cout << "Inside SayGetLog" << entry.address() << " " << entry.data() << endl;
     }
     else
     {

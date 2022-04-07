@@ -31,13 +31,6 @@ using namespace helloworld;
 using namespace grpc;
 using namespace std;
 
-class Request
-{
-public:
-    int address;
-    const char *data;
-};
-
 class StoreRPCServiceImpl final : public StoreRPC::Service
 {
 
@@ -63,8 +56,7 @@ public:
     int hostname = gethostname(hostbuffer, 256);
     bool replication;
     std::string currPhase;
-    deque<const WriteRequest *> request_queue;
-    unordered_map<int, Request *> requestMap;
+    deque<LogEntry> request_queue;
     ChannelArguments ch_args;
 
     StoreRPCServiceImpl(string &backup_str)

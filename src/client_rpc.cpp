@@ -58,7 +58,7 @@ int StoreRPCClient::SayRead(int in, string& val)
     }
 }
 
-int StoreRPCClient::SayGetLog(int in, WriteRequest &obj)
+int StoreRPCClient::SayGetLog(int in, LogEntry &obj)
 {
     LogRequest req;
     req.set_offset(in);
@@ -74,7 +74,8 @@ int StoreRPCClient::SayGetLog(int in, WriteRequest &obj)
         }
         else // 0 means continue;
         {
-            obj = reply.entry();
+            obj.setAddress(reply.address());
+            obj.setData(reply.data());
             return 0;
         }
     }
