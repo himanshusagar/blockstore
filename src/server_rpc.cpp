@@ -86,31 +86,23 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     // Checking if the current instance is primary
     if (leader && replication)
     {
-      //  while (retry < maxRetry && rep_result != 0)
+        while (retry < maxRetry)
         {
             std::string val = request->data();
             rep_result = connOtherServer->SayWrite(address, val);
-            // cout << "Replicate Result Status" << rep_result << endl;
-            retry = retry + 1;
-            // if (rep_result != 0)
-            // {
-            //     cout << rep_result << endl;
-            //     response->set_errcode(rep_result);
-            //     cout << "Replication on Backup failed and will be retried" << endl;
-            //     continue;
-            // }
-            //else
-            //{
+            response->set_errcode(rep_result); 
+            if (rep_result == 0)
+            {
                 CrashPoints::serverCrash(PRIMARY_AFTER_ACK_FROM_B);
-                // request_queue.pop_back();
-                // cout << "Replication on Backup is successfull" << endl;
-           // }
+                cout << "Replication on Backup is successfull" << endl;
+                break;
+            }
+            retry = retry + 1;
         }
         if (rep_result != 0)
         {
-            cout << "Replication on Backup is failed after several retries" << endl;
-            cout << "Making Backup Inactive" << endl;
-            LogEntry entry(request->address() , request->data() );
+            cout << "Replication Failed ; Making Backup Inactive" << endl;
+            LogEntry entry(request->address() , request->data());
             request_queue.push_back(entry);
             backupIsActive = false;
         }
