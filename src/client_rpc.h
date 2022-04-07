@@ -32,13 +32,21 @@ private:
     long long int mAddress;
     std::string mData;
 public:
-    LogEntry(long long int address, string data);
+    LogEntry(long long int address, string data) : mAddress(address), mData(std::move(data)) {}
     LogEntry() : mAddress(0) , mData("") { };
-
-    long long int address() const;
-    void setAddress(long long int address);
-    const string &data() const;
-    void setData(const string &data);
+    
+    long long int address() const {
+        return mAddress;
+    }
+    void setAddress(long long int address) {
+        mAddress = address;
+    }
+    const string &data() const {
+        return mData;
+    }
+    void setData(const string &data) {
+        mData = data;
+    }
 };
 
 class StoreRPCClient

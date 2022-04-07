@@ -169,21 +169,3 @@ Status StoreRPCServiceImpl::SetCrashpoint(ServerContext *context, const CrashReq
     }
     return Status::OK;
 }
-
-long long int LogEntry::address() const {
-    return mAddress;
-}
-
-void LogEntry::setAddress(long long int address) {
-    mAddress = address;
-}
-
-const string &LogEntry::data() const {
-    return mData;
-}
-
-void LogEntry::setData(const string &data) {
-    mData = data;
-}
-
-LogEntry::LogEntry(long long int address, string data) : mAddress(address), mData(std::move(data)) {}
