@@ -68,6 +68,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     int retry = 0;
     int rep_result = -1;
     lseek(storefd, address, SEEK_SET);
+    bool fsync_op = request->fsync();
     // Main Action
     // cout << "Write" << endl;
     int result = write(storefd, request->data().data(), MAX_SIZE);
@@ -76,6 +77,18 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         cout << "Write Failed" << endl;
         response->set_errcode(errno);
         return Status::OK;
+    }
+
+    // Doing fsync
+    if (fsync_op)
+    {
+        int ret_flush;
+        ret_flush = fsync(storefd);
+        if (ret_flush!=0){
+            cout <<"Error in fflush" <<endl;
+            response->set_errcode(errno);
+            return Status::OK;
+        }
     }
     
     if (leader)
@@ -86,10 +99,10 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     // Checking if the current instance is primary
     if (leader && replication)
     {
-        while (retry < maxRetry)
+        while (backupIsActive && (retry < maxRetry) )
         {
             std::string val = request->data();
-            rep_result = connOtherServer->SayWrite(address, val);
+            rep_result = connOtherServer->SayWrite(address, val, fsync_op);
             response->set_errcode(rep_result); 
             if (rep_result == 0)
             {

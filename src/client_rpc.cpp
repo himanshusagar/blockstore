@@ -82,17 +82,17 @@ int StoreRPCClient::SayGetLog(int in, LogEntry &obj)
     return -1;
 };
 
-int StoreRPCClient::SayInternalReq(OP op , int in, string& val)
+int StoreRPCClient::SayInternalReq(OP op , int in, string& val, bool fsync_op)
 {
     if(op == OP_READ)
         return SayRead(in , val);
     else if(op == OP_WRITE)
-        return SayWrite(in , val);
+        return SayWrite(in , val, fsync_op);
     return -1;
 }
 
 
-int StoreRPCClient::SayWrite(int in, string& val)
+int StoreRPCClient::SayWrite(int in, string& val, bool fsync_op)
 {
     struct timespec start, end, mid;
     long long int diff;
@@ -102,6 +102,7 @@ int StoreRPCClient::SayWrite(int in, string& val)
     if(val.size() > MAX_SIZE)
         val.resize(MAX_SIZE);
     req.set_data(val.data());
+    req.set_fsync(fsync_op);
 
     WriteResponse reply;
 
