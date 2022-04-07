@@ -26,6 +26,12 @@ void heartbeat_thread(string address, StoreRPCServiceImpl *service)
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), service->ch_args) , 
                                 target_str);
 
+    cout << "Other Conn for recovery" << target_str << endl;
+//    if (!service->leader){
+        // if startup is in backup mode, perform recovery.
+        service->PerformRecovery();
+  //  }
+
     while (true)
     {
         int ret;
@@ -138,10 +144,6 @@ void run_server(std::string port, bool replication)
         service.backupIsActive = true & service.leader;
     }
 
-    if (!service.leader){
-        // if startup is in backup mode, perform recovery.
-        service.PerformRecovery();
-    }
 
     std::cout << hostbuffer << "  " << service.leader << std::endl;
     //  grpc::reflection::InitProtoReflectionServerBuilderPlugin();
