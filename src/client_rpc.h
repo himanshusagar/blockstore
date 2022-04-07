@@ -26,6 +26,21 @@ enum OP
     OP_WRITE
 };
 
+class LogEntry
+{
+private:
+    long long int mAddress;
+    std::string mData;
+public:
+    LogEntry(long long int address, string data);
+    LogEntry() : mAddress(0) , mData("") { };
+
+    long long int address() const;
+    void setAddress(long long int address);
+    const string &data() const;
+    void setData(const string &data);
+};
+
 class StoreRPCClient
 {
 public:
@@ -36,7 +51,7 @@ public:
     int SayRead(int in, string& val);
     int SayWrite(int in, string& val);
     int SayInternalReq(OP op , int in, string& val);
-    int SayGetLog(int in, WriteRequest& obj);
+    int SayGetLog(int in, LogEntry& obj);
     int PingLeader();
     int PingBackup();
     int Ping(PongResponse *reply);
