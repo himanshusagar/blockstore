@@ -65,7 +65,7 @@ int workload_perf(std::string port, std::string action, std::string action_type,
     std::mt19937 mixed_gen(mixed_rd());
     std::uniform_real_distribution<float> mixed_dis(0, 1);
 
-    std::string mixed_action = "read";
+    std::string mixed_action = "none";
     if (action_type == "random")
     {
         std::random_device rd;
