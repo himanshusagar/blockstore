@@ -33,8 +33,8 @@ int StoreRPCClient::SayRead(int in, string& val)
     clock_gettime(CLOCK_MONOTONIC, &end);
 
     diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
-    //printf("%lld\n", diff); //<< std::endl;
-    //fflush( stdout );
+    printf("%lld\n", diff); //<< std::endl;
+    fflush( stdout );
 
     // Act upon its status.
     if (status.ok())
@@ -111,8 +111,8 @@ int StoreRPCClient::SayWrite(int in, string& val)
     clock_gettime(CLOCK_MONOTONIC, &end);
 
     diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
-    // printf("%lld\n", diff); //<< std::endl;
-    // fflush( stdout );
+    printf("%lld\n", diff); //<< std::endl;
+    fflush( stdout );
     if (status.ok())
     {
         if (reply.errcode() == 0)
