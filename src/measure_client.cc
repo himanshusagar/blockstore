@@ -101,7 +101,7 @@ int workload_perf(std::string port, std::string action, std::string action_type,
     else if (action_type == "sequential")
     {
         int diff = MAX_SIZE;
-        for (int i = 1; i < count; i += 1)
+        for (int i = 0; i < count; i += 1)
         {
             if (action == "mixed")
             {
@@ -116,11 +116,11 @@ int workload_perf(std::string port, std::string action, std::string action_type,
             }
             if (action == "read" || mixed_action == "read")
             {
-                storeRpc.SayRead(i*diff, read_data);
+                storeRpc.SayRead((i+1)*diff, read_data);
             }
             else
             {
-                storeRpc.SayWrite(i*diff, write_data, true);
+                storeRpc.SayWrite((i+1)*diff, write_data, true);
             }
         }
     }
