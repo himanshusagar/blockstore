@@ -42,15 +42,15 @@ public:
 
 struct UnitEntry
 {
-    TimeLog& mStats;
+    TimeLog* mStats;
     std::chrono::high_resolution_clock::time_point begin;
-    UnitEntry(TimeLog& m) :
+    UnitEntry(TimeLog* m) :
             mStats(m), begin(std::chrono::high_resolution_clock::now()) { }
     ~UnitEntry()
     {
         auto d = std::chrono::high_resolution_clock::now() - begin;
-        uint64_t countValue = std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
-        mStats.add(countValue);
+        uint64_t countValue = std::chrono::duration_cast<std::chrono::nanoseconds>(d).count();
+        mStats->add(countValue);
     }
 };
 /*
