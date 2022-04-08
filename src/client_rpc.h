@@ -57,7 +57,7 @@ public:
     TimeLog *writeLog = NULL;
 
     StoreRPCClient(std::shared_ptr<Channel> channel , std::string& my)
-        : stub_(StoreRPC::NewStub(channel)) , mIP(my) { }
+        : stub_(StoreRPC::NewStub(channel)) , mIP(my) { writeLog = NULL; }
 
     int SayRead(int in, string& val);
     int SayWrite(int in, string& val);

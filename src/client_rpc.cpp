@@ -115,8 +115,13 @@ int StoreRPCClient::SayWrite(int in, string& val)
     Status status;
     //clock_gettime(CLOCK_MONOTONIC, &start);
     {
-        UnitEntry p(*writeLog);
-        status = stub_->SayWrite(&context, req, &reply);
+        if(writeLog != NULL)
+        {
+            UnitEntry p(*writeLog);
+            status = stub_->SayWrite(&context, req, &reply);
+        }
+        else
+            status = stub_->SayWrite(&context, req, &reply);
     }
     //clock_gettime(CLOCK_MONOTONIC, &end);
     //diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
