@@ -54,7 +54,8 @@ int main(int argc, char *argv[]) {
         readRemote.resize(writeData.size());
 
         if (localFile.checkSumFailed(readLocal, readRemote)) {
-            cout << "Check Sum Failed at " << i << endl;
+            if(!flag)
+                cout << "Check Sum Failed at " << i << endl;
         }
 
 
