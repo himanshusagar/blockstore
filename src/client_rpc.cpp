@@ -30,8 +30,13 @@ int StoreRPCClient::SayRead(int in, string& val)
     Status status;
 
     {
-     //   UnitEntry p(mReadLog);
-        status = stub_->SayRead(&context, req, &reply);
+        if(writeLog != NULL)
+        {
+            UnitEntry p(*writeLog);
+            status = stub_->SayRead(&context, req, &reply);
+        }
+        else
+            status = stub_->SayRead(&context, req, &reply);
     }
 
     // The actual RPC.
