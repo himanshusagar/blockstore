@@ -47,7 +47,7 @@ int workload_consistency(std::string port)
     return 0;
 }
 
-int workload_perf(std::string port, std::string action, std::string action_type, int count, TimeLog& timeLog)
+int workload_perf(std::string port, std::string action, std::string action_type, int count)
 {
 
     std::string write_data(4096, 'k');
@@ -61,7 +61,6 @@ int workload_perf(std::string port, std::string action, std::string action_type,
     StoreRPCClient storeRpc(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args), target_str);
 
-    storeRpc.mTimeLog = timeLog;
     std::random_device mixed_rd;
     std::mt19937 mixed_gen(mixed_rd());
     std::uniform_real_distribution<float> mixed_dis(0, 1);
@@ -147,7 +146,7 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < thread_count; i++)
     {
-        t[i] = std::thread(workload_perf, port, action, action_type, count, timeLog);
+        t[i] = std::thread(workload_perf, port, action, action_type, count);
     }
 
     for (int i = 0; i < thread_count; i++)

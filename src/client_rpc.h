@@ -54,7 +54,6 @@ class StoreRPCClient
 {
 public:
     std::string mIP;
-    TimeLog mTimeLog;
     StoreRPCClient(std::shared_ptr<Channel> channel , std::string& my)
         : stub_(StoreRPC::NewStub(channel)) , mIP(my) { }
 
