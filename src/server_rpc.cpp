@@ -135,7 +135,7 @@ Status StoreRPCServiceImpl::SayGetLog(ServerContext *context, const LogRequest *
         response->set_address(entry.address());
         response->set_data(entry.data());
         response->set_retcode(0);
-        cout << "Inside SayGetLog" << entry.address() << " " << entry.data() << endl;
+        //cout << "Inside SayGetLog" << entry.address() << " " << entry.data() << endl;
     }
     else
     {
