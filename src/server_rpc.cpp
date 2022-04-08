@@ -47,7 +47,7 @@ Status StoreRPCServiceImpl::SayRead(ServerContext *context, const ReadRequest *r
     response->set_data(buff);
     if (result == -1)
     {
-        cout << "Read Failed" << endl;
+       // cout << "Read Failed" << endl;
         response->set_errcode(errno);
     }
     else
@@ -73,7 +73,7 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
     int result = write(storefd, request->data().data(), MAX_SIZE);
     if (result == -1)
     {
-        cout << "Write Failed" << endl;
+        //cout << "Write Failed" << endl;
         response->set_errcode(errno);
         return Status::OK;
     }
@@ -108,8 +108,8 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         }
         if (rep_result != 0)
         {
-            cout << "Replication on Backup is failed after several retries" << endl;
-            cout << "Making Backup Inactive" << endl;
+           // cout << "Replication on Backup is failed after several retries" << endl;
+            // cout << "Making Backup Inactive" << endl;
             LogEntry entry(request->address() , request->data() );
             request_queue.push_back(entry);
             backupIsActive = false;
