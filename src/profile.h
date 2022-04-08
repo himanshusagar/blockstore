@@ -17,7 +17,7 @@ class TimeLog
     std::vector<uint64_t> values;
     std::string name;
 public:
-    TimeLog(): name("EMPTY"){}
+    TimeLog(): name("op_time"){}
     TimeLog(const std::string name_): name("client_" + std::move(name_)) {}
     void add(uint64_t ns) {
         values.push_back(ns);
