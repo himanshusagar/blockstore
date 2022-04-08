@@ -4,6 +4,8 @@ sudo apt update
 
 sudo apt install gcc fuse3 libfuse3-dev make cmake 
 
+fallocate -l 100GB foo.txt
+
 git clone https://github.com/Microsoft/vcpkg.git 
 
 cd vcpkg
