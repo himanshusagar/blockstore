@@ -24,7 +24,8 @@ using namespace std;
 enum OP
 {
     OP_READ,
-    OP_WRITE
+    OP_WRITE,
+    OP_CRASH
 };
 
 class LogEntry

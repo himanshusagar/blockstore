@@ -100,6 +100,8 @@ int StoreRPCClient::SayInternalReq(OP op , int in, string& val, bool fsync_op)
         return SayRead(in , val);
     else if(op == OP_WRITE)
         return SayWrite(in , val, fsync_op);
+    else if(op == OP_CRASH)
+        return SetCrashpointClient(in);
     return -1;
 }
 
