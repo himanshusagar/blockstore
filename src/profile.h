@@ -1,5 +1,5 @@
 //
-// Created by Himanshu Sagar on 4/7/22.
+// Created by Himanshu Sagar on 3/4/22.
 //
 
 #ifndef BLOCKSTORE_PROFILE_H
@@ -36,21 +36,20 @@ public:
             double dSize = values.size();
             std::cout << (int) ( ( (double) sum) / dSize ) << "\n";
         }
-        fflush(stdout);
     }
 };
 
 struct UnitEntry
 {
-    TimeLog* mStats;
+    TimeLog& mStats;
     std::chrono::high_resolution_clock::time_point begin;
-    UnitEntry(TimeLog* m) :
+    UnitEntry(TimeLog& m) :
             mStats(m), begin(std::chrono::high_resolution_clock::now()) { }
     ~UnitEntry()
     {
         auto d = std::chrono::high_resolution_clock::now() - begin;
-        uint64_t countValue = std::chrono::duration_cast<std::chrono::nanoseconds>(d).count();
-        mStats->add(countValue);
+        uint64_t countValue = std::chrono::duration_cast<std::chrono::microseconds>(d).count();
+        mStats.add(countValue);
     }
 };
 /*
@@ -69,5 +68,4 @@ int main()
     return 0;
 }
 */
-
 #endif //BLOCKSTORE_PROFILE_H

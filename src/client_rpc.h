@@ -54,8 +54,8 @@ class StoreRPCClient
 {
 public:
     std::string mIP;
-    TimeLog* mReadLog = NULL;
-    TimeLog* mWriteLog = NULL;
+    TimeLog mReadLog;
+    TimeLog mWriteLog;
     StoreRPCClient(std::shared_ptr<Channel> channel , std::string& my)
         : stub_(StoreRPC::NewStub(channel)) , mIP(my) { }
 
