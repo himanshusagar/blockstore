@@ -29,7 +29,13 @@ void heartbeat_thread(string address, StoreRPCServiceImpl *service)
     cout << "Other Conn for recovery" << target_str << endl;
 //    if (!service->leader){
         // if startup is in backup mode, perform recovery.
-        service->PerformRecovery();
+    {
+        TimeLog timeLog("recovery_time");
+        {
+            UnitEntry p(timeLog);
+            service->PerformRecovery();
+        }
+    }
   //  }
 
     while (true)

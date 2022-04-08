@@ -18,17 +18,17 @@ int StoreRPCServiceImpl::PerformRecovery()
 
     while (connOtherServer->SayGetLog(index, entry) == 0)
     {
-        cout << "Inside PerformRecovery " << index << " " << entry.address() << " " << entry.data() << endl;
+       // cout << "Inside PerformRecovery " << index << " " << entry.address() << " " << entry.data() << endl;
         if (entry.address() == 0)
         {
-            cout << "Unfilled entry" << endl;
+         //   cout << "Unfilled entry" << endl;
             return -1;
         }
         lseek(storefd, entry.address(), SEEK_SET);
         int result = write(storefd, entry.data().data(), MAX_SIZE);
         if (result == -1)
         {
-            cout << "Write Failed. Recovery stopped." << endl;
+           // cout << "Write Failed. Recovery stopped." << endl;
             return -1;
             // break;
         }
@@ -107,14 +107,12 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
             if (rep_result == 0)
             {
                 CrashPoints::serverCrash(PRIMARY_AFTER_ACK_FROM_B);
-                cout << "Replication on Backup is successfull" << endl;
                 break;
             }
             retry = retry + 1;
         }
         if (rep_result != 0)
         {
-            cout << "Replication Failed ; Making Backup Inactive" << endl;
             LogEntry entry(request->address() , request->data());
             request_queue.push_back(entry);
             backupIsActive = false;
@@ -136,7 +134,7 @@ Status StoreRPCServiceImpl::SayGetLog(ServerContext *context, const LogRequest *
         response->set_address(entry.address());
         response->set_data(entry.data());
         response->set_retcode(0);
-        cout << "Inside SayGetLog" << entry.address() << " " << entry.data() << endl;
+        //cout << "Inside SayGetLog" << entry.address() << " " << entry.data() << endl;
     }
     else
     {

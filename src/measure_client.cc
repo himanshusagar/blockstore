@@ -73,7 +73,7 @@ int workload_perf(std::string port, std::string action, std::string action_type,
     {
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<double> dis(0, MAX_VAL - 4200);
+        std::uniform_int_distribution<int> dis(0 , 1e5);
 
         for (int i = 0; i < count; i++)
         {
@@ -81,11 +81,11 @@ int workload_perf(std::string port, std::string action, std::string action_type,
             {
                 if (mixed_dis(mixed_gen) <= 0.1)
                 {
-                    mixed_action = "read";
+                    mixed_action = "write";
                 }
                 else
                 {
-                    mixed_action = "write";
+                    mixed_action = "read";
                 }
             }
             if (action == "read" || mixed_action == "read")
@@ -100,27 +100,27 @@ int workload_perf(std::string port, std::string action, std::string action_type,
     }
     else if (action_type == "sequential")
     {
-        std::int64_t diff = MAX_VAL / count;
-        for (int i = 1; i < count; i += 1)
+        int diff = MAX_SIZE;
+        for (int i = 0; i < count; i += 1)
         {
             if (action == "mixed")
             {
                 if (mixed_dis(mixed_gen) <= 0.1)
                 {
-                    mixed_action = "read";
+                    mixed_action = "write";
                 }
                 else
                 {
-                    mixed_action = "write";
+                    mixed_action = "read";
                 }
             }
             if (action == "read" || mixed_action == "read")
             {
-                storeRpc.SayRead(i*diff, read_data);
+                storeRpc.SayRead((i+1)*diff, read_data);
             }
             else
             {
-                storeRpc.SayWrite(i, write_data, true);
+                storeRpc.SayWrite((i+1)*diff, write_data, true);
             }
         }
     }
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 
     std::thread t[thread_count];
 
-    cout << port << " " << action << " " << action_type << " " << count << " " << thread_count << endl;
+//    cout << port << " " << action << " " << action_type << " " << count << " " << thread_count << endl;
 
     if (action == "consistency")
     {
