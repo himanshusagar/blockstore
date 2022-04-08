@@ -60,8 +60,8 @@ public:
         : stub_(StoreRPC::NewStub(channel)) , mIP(my) { writeLog = NULL; }
 
     int SayRead(int in, string& val);
-    int SayWrite(int in, string& val);
-    int SayInternalReq(OP op , int in, string& val);
+    int SayWrite(int in, string& val, bool fsync_op = false);
+    int SayInternalReq(OP op , int in, string& val, bool fsync_op = false);
     int SayGetLog(int in, LogEntry& obj);
     int PingLeader();
     int PingBackup();

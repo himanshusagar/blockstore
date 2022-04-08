@@ -94,14 +94,14 @@ int workload_perf(std::string port, std::string action, std::string action_type,
             }
             else
             {
-                storeRpc.SayWrite(dis(gen), write_data);
+                storeRpc.SayWrite(dis(gen), write_data, true);
             }
         }
     }
-    else
+    else if (action_type == "sequential")
     {
         std::int64_t diff = MAX_VAL / count;
-        for (std::int64_t i = 0; i < count; i += diff)
+        for (int i = 1; i < count; i += 1)
         {
             if (action == "mixed")
             {
@@ -116,11 +116,11 @@ int workload_perf(std::string port, std::string action, std::string action_type,
             }
             if (action == "read" || mixed_action == "read")
             {
-                storeRpc.SayRead(i, read_data);
+                storeRpc.SayRead(i*diff, read_data);
             }
             else
             {
-                storeRpc.SayWrite(i, write_data);
+                storeRpc.SayWrite(i, write_data, true);
             }
         }
     }

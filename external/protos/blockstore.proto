@@ -28,6 +28,7 @@ message WriteRequest {
   int32 errCode = 1;
   bytes data = 2;
   int64 address = 3;
+  bool fsync = 4;
 }
 message WriteResponse {
   int32 errCode = 1;
