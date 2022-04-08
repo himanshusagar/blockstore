@@ -1,0 +1,19 @@
+System Code is about 500 lines of code (including proto files)
+Main Server and Client code is about 200 lines.
+Server Code is inside server.cc : 179
+Interactive Client is inside client.cc : 17
+Testing code is about
+50 lines of python code
+300 lines of c code
+Correctness Testing is inside correct.cc : 17 which uses localFile.h : 21(for local file comparison), crash_points.h : 16 (for Crash related locations) and client_rpc.cpp : 97 for enable and disable fsync per write RPC sent.
+Measurement code is inside measure_client.cc that supports random and sequential works across variable # of threads.
+
+1.1 Replication Strategy : server_rpc.cpp : 100
+    Durability : server_rpc.cpp : 86
+    Crash Recovery Protocol server_rpc.cpp : 14
+
+2.1 Correctness : tests are in correct.cc : : 17
+    Availability : client auto-switch between two nodes is at client_rpc.cpp : 199
+    Strong Consistency : server_rpc.cpp : 127 and sever_rpc.cpp : 60.
+    Testing Strategy : correct.cc : 17.
+
