@@ -11,10 +11,6 @@
 #define MAX_SIZE 4096
 
 
-TimeLog write_time("write_time");
-TimeLog read_time("read_time");
-
-
 int StoreRPCClient::SayRead(int in, string& val)
 {
 
@@ -34,7 +30,7 @@ int StoreRPCClient::SayRead(int in, string& val)
     Status status;
 
     {
-        UnitEntry p(write_time);
+        UnitEntry p(mReadLog);
         status = stub_->SayRead(&context, req, &reply);
     }
 
@@ -119,7 +115,7 @@ int StoreRPCClient::SayWrite(int in, string& val)
     Status status;
     //clock_gettime(CLOCK_MONOTONIC, &start);
     {
-        UnitEntry p(write_time);
+        UnitEntry p(mWriteLog);
         status = stub_->SayWrite(&context, req, &reply);
     }
     //clock_gettime(CLOCK_MONOTONIC, &end);

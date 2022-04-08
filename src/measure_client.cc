@@ -47,6 +47,9 @@ int workload_consistency(std::string port)
     return 0;
 }
 
+TimeLog write_time("write_time");
+TimeLog read_time("read_time");
+
 int workload_perf(std::string port, std::string action, std::string action_type, int count)
 {
 
@@ -60,6 +63,8 @@ int workload_perf(std::string port, std::string action, std::string action_type,
     ch_args.SetMaxSendMessageSize(INT_MAX);
     StoreRPCClient storeRpc(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args), target_str);
+    storeRpc.mReadLog = read_time;
+    storeRpc.mWriteLog = write_time;
 
     std::random_device mixed_rd;
     std::mt19937 mixed_gen(mixed_rd());

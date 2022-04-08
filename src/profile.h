@@ -18,7 +18,7 @@ class TimeLog
     std::string name;
 public:
     TimeLog(): name("EMPTY"){}
-    TimeLog(const std::string name_): name("fuse_" + std::move(name_)) {}
+    TimeLog(const std::string name_): name("client_" + std::move(name_)) {}
     void add(uint64_t ns) {
         values.push_back(ns);
     }
@@ -36,6 +36,7 @@ public:
             double dSize = values.size();
             std::cout << (int) ( ( (double) sum) / dSize ) << "\n";
         }
+        fflush(stdout);
     }
 };
 
@@ -48,7 +49,7 @@ struct UnitEntry
     ~UnitEntry()
     {
         auto d = std::chrono::high_resolution_clock::now() - begin;
-        uint64_t countValue = std::chrono::duration_cast<std::chrono::microseconds>(d).count();
+        uint64_t countValue = std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
         mStats.add(countValue);
     }
 };
