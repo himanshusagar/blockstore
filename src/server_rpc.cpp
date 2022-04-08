@@ -18,17 +18,17 @@ int StoreRPCServiceImpl::PerformRecovery()
 
     while (connOtherServer->SayGetLog(index, entry) == 0)
     {
-        cout << "Inside PerformRecovery " << index << " " << entry.address() << " " << entry.data() << endl;
+       // cout << "Inside PerformRecovery " << index << " " << entry.address() << " " << entry.data() << endl;
         if (entry.address() == 0)
         {
-            cout << "Unfilled entry" << endl;
+         //   cout << "Unfilled entry" << endl;
             return -1;
         }
         lseek(storefd, entry.address(), SEEK_SET);
         int result = write(storefd, entry.data().data(), MAX_SIZE);
         if (result == -1)
         {
-            cout << "Write Failed. Recovery stopped." << endl;
+           // cout << "Write Failed. Recovery stopped." << endl;
             return -1;
             // break;
         }
