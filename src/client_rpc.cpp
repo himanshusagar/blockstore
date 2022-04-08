@@ -30,7 +30,7 @@ int StoreRPCClient::SayRead(int in, string& val)
     Status status;
 
     {
-        UnitEntry p(mReadLog);
+     //   UnitEntry p(mReadLog);
         status = stub_->SayRead(&context, req, &reply);
     }
 
@@ -115,7 +115,7 @@ int StoreRPCClient::SayWrite(int in, string& val)
     Status status;
     //clock_gettime(CLOCK_MONOTONIC, &start);
     {
-        UnitEntry p(mWriteLog);
+        UnitEntry p(*writeLog);
         status = stub_->SayWrite(&context, req, &reply);
     }
     //clock_gettime(CLOCK_MONOTONIC, &end);
