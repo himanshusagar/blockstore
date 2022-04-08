@@ -81,11 +81,11 @@ int workload_perf(std::string port, std::string action, std::string action_type,
             {
                 if (mixed_dis(mixed_gen) <= 0.1)
                 {
-                    mixed_action = "read";
+                    mixed_action = "write";
                 }
                 else
                 {
-                    mixed_action = "write";
+                    mixed_action = "read";
                 }
             }
             if (action == "read" || mixed_action == "read")
@@ -107,11 +107,11 @@ int workload_perf(std::string port, std::string action, std::string action_type,
             {
                 if (mixed_dis(mixed_gen) <= 0.1)
                 {
-                    mixed_action = "read";
+                    mixed_action = "write";
                 }
                 else
                 {
-                    mixed_action = "write";
+                    mixed_action = "read";
                 }
             }
             if (action == "read" || mixed_action == "read")
