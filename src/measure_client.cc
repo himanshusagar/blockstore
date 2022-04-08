@@ -91,7 +91,7 @@ int workload_perf(std::string port, std::string action, std::string action_type,
             }
             else
             {
-                storeRpc.SayWrite(dis(gen), write_data);
+                storeRpc.SayWrite(dis(gen), write_data, true);
             }
         }
     }
@@ -117,7 +117,7 @@ int workload_perf(std::string port, std::string action, std::string action_type,
             }
             else
             {
-                storeRpc.SayWrite(i, write_data);
+                storeRpc.SayWrite(i, write_data, true);
             }
         }
     }
