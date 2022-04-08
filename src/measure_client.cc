@@ -48,7 +48,7 @@ int workload_consistency(std::string port)
 }
 
 
-TimeLog *writeLog = NULL;
+
 
 int workload_perf(std::string port, std::string action, std::string action_type, int count)
 {
@@ -60,7 +60,7 @@ int workload_perf(std::string port, std::string action, std::string action_type,
 
     ch_args.SetMaxReceiveMessageSize(INT_MAX);
     ch_args.SetMaxSendMessageSize(INT_MAX);
-
+    TimeLog *writeLog = new TimeLog("write_time");
 
     StoreRPCClient storeRpc(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args), target_str);
@@ -125,7 +125,7 @@ int workload_perf(std::string port, std::string action, std::string action_type,
             }
         }
     }
-
+    delete writeLog;
     return 0;
 }
 
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
     int count = atoi(argv[4]);
     int thread_count = atoi(argv[5]);
     signal(SIGINT, sigintHandler);
-    writeLog = new TimeLog("write_time");
+
 
 
     std::thread t[thread_count];
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
     {
         t[i].join();
     }
-    delete writeLog;
+
 
     return 0;
 }
