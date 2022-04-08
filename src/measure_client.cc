@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 
     std::thread t[thread_count];
 
-    cout << port << " " << action << " " << action_type << " " << count << " " << thread_count << endl;
+//    cout << port << " " << action << " " << action_type << " " << count << " " << thread_count << endl;
 
     if (action == "consistency")
     {
