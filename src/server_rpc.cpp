@@ -113,7 +113,6 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
         }
         if (rep_result != 0)
         {
-            cout << "Replication Failed ; Making Backup Inactive" << endl;
             LogEntry entry(request->address() , request->data());
             request_queue.push_back(entry);
             backupIsActive = false;
