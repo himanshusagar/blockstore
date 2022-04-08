@@ -25,7 +25,7 @@
 
 
 #define MAX_FILE_SIZE 1e11
-#define pathname "/users/hsagar/dev/foo.txt"
+#define pathname "/users/hsagar/dev/akshat/foo.txt"
 
 using namespace helloworld;
 using namespace grpc;
@@ -69,12 +69,12 @@ public:
             storefd = open(pathname, O_CREAT, S_IRUSR | S_IWUSR);
             if (storefd < 0)
             {
-                cout << "File Creation Failed";
+                cout << "File Creation Failed"<< endl;
             }
             int result = fallocate(storefd, 0, 0, MAX_FILE_SIZE);
             if (result == -1)
             {
-                cout << "File Allocation Failed";
+                cout << "File Allocation Failed"<< endl;
             }
         }
         maxRetry = 16;
