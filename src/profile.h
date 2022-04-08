@@ -48,7 +48,7 @@ struct UnitEntry
     ~UnitEntry()
     {
         auto d = std::chrono::high_resolution_clock::now() - begin;
-        uint64_t countValue = std::chrono::duration_cast<std::chrono::microseconds>(d).count();
+        uint64_t countValue = std::chrono::duration_cast<std::chrono::nanoseconds>(d).count();
         mStats.add(countValue);
     }
 };
