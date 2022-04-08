@@ -38,7 +38,7 @@ public:
 
             int index9 = 0.9 * dSize;
             int index99 = 0.99 * dSize;
-            std::cout << (int)( ( ( (double) sum) / dSize ) ) << ", " << values[values.size()/2] ;
+            std::cout << (int)( ( ( (double) sum) / dSize ) ) << ", " << values[values.size()/2] << ", ";
             std::cout << values[index9] << ", " << values[index99] << std::endl;
             fflush(stdout);
         }
