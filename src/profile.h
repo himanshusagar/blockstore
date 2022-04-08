@@ -23,7 +23,7 @@ public:
         values.push_back(ns);
     }
     ~TimeLog() {
-        //std::cout << name << ", ";
+        std::cout << name << ", ";
         if (values.size() == 1)
         {
             //Only one value
