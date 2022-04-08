@@ -10,6 +10,7 @@
 
 #define MAX_SIZE 4096
 
+
 int StoreRPCClient::SayRead(int in, string& val)
 {
 
@@ -26,15 +27,21 @@ int StoreRPCClient::SayRead(int in, string& val)
     // Context for the client. It could be used to convey extra information to
     // the server and/or tweak certain RPC behaviors.
     ClientContext context;
+    Status status;
+
+    {
+     //   UnitEntry p(mReadLog);
+        status = stub_->SayRead(&context, req, &reply);
+    }
 
     // The actual RPC.
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    Status status = stub_->SayRead(&context, req, &reply);
-    clock_gettime(CLOCK_MONOTONIC, &end);
+  //  clock_gettime(CLOCK_MONOTONIC, &start);
+    //  status = stub_->SayRead(&context, req, &reply);
+    //clock_gettime(CLOCK_MONOTONIC, &end);
 
-    diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
-    printf("%lld\n", diff); //<< std::endl;
-    fflush( stdout );
+    //diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+    //printf("%lld\n", diff); //<< std::endl;
+    //fflush( stdout );
 
     // Act upon its status.
     if (status.ok())
@@ -105,16 +112,23 @@ int StoreRPCClient::SayWrite(int in, string& val, bool fsync_op)
     req.set_fsync(fsync_op);
 
     WriteResponse reply;
-
     ClientContext context;
+    Status status;
+    //clock_gettime(CLOCK_MONOTONIC, &start);
+    {
+        if(writeLog != NULL)
+        {
+            UnitEntry p(*writeLog);
+            status = stub_->SayWrite(&context, req, &reply);
+        }
+        else
+            status = stub_->SayWrite(&context, req, &reply);
+    }
+    //clock_gettime(CLOCK_MONOTONIC, &end);
+    //diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+    //printf("%lld\n", diff); //<< std::endl;
+    //fflush( stdout );
 
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    Status status = stub_->SayWrite(&context, req, &reply);
-    clock_gettime(CLOCK_MONOTONIC, &end);
-
-    diff = BILLION * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
-    printf("%lld\n", diff); //<< std::endl;
-    fflush( stdout );
     if (status.ok())
     {
         if (reply.errcode() == 0)

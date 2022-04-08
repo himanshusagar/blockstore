@@ -47,9 +47,11 @@ int workload_consistency(std::string port)
     return 0;
 }
 
-int workload_perf(std::string port, std::string action, std::string action_type, int count)
-{
 
+
+
+int workload_perf(std::string port, std::string action, std::string action_type, int count, TimeLog* lLog)
+{
     std::string write_data(4096, 'k');
     std::string read_data;
     read_data.resize(MAX_SIZE, '0');
@@ -58,9 +60,10 @@ int workload_perf(std::string port, std::string action, std::string action_type,
 
     ch_args.SetMaxReceiveMessageSize(INT_MAX);
     ch_args.SetMaxSendMessageSize(INT_MAX);
+
     StoreRPCClient storeRpc(
         grpc::CreateCustomChannel(target_str, grpc::InsecureChannelCredentials(), ch_args), target_str);
-
+    storeRpc.writeLog = lLog;
     std::random_device mixed_rd;
     std::mt19937 mixed_gen(mixed_rd());
     std::uniform_real_distribution<float> mixed_dis(0, 1);
@@ -135,7 +138,11 @@ int main(int argc, char *argv[])
     int thread_count = atoi(argv[5]);
     signal(SIGINT, sigintHandler);
 
+    std::vector<TimeLog> arr(thread_count);
+
     std::thread t[thread_count];
+
+    cout << port << " " << action << " " << action_type << " " << count << " " << thread_count << endl;
 
     if (action == "consistency")
     {
@@ -145,7 +152,7 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < thread_count; i++)
     {
-        t[i] = std::thread(workload_perf, port, action, action_type, count);
+        t[i] = std::thread(workload_perf, port, action, action_type, count, &arr[i]);
     }
 
     for (int i = 0; i < thread_count; i++)
