@@ -47,11 +47,13 @@ int workload_consistency(std::string port)
     return 0;
 }
 
-TimeLog write_time("write_time");
-TimeLog read_time("read_time");
+
 
 int workload_perf(std::string port, std::string action, std::string action_type, int count)
 {
+
+    TimeLog write_time("write_time");
+    TimeLog read_time("read_time");
 
     std::string write_data(4096, 'k');
     std::string read_data;
