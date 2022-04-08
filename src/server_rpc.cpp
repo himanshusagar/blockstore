@@ -107,7 +107,6 @@ Status StoreRPCServiceImpl::SayWrite(ServerContext *context, const WriteRequest 
             if (rep_result == 0)
             {
                 CrashPoints::serverCrash(PRIMARY_AFTER_ACK_FROM_B);
-                cout << "Replication on Backup is successfull" << endl;
                 break;
             }
             retry = retry + 1;
