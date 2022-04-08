@@ -58,9 +58,10 @@ int main(int argc, char *argv[]) {
         }
 
 
-        if (flag && (mixed_dis(mixed_gen) <= 0.05) )
+        if (flag && (mixed_dis(mixed_gen) <= 0.02) )
         {
-            //Let's crash for 5% of requests.
+            //Let's crash primary with 2% probability randomly.
+            //Crash only once.
             int randNum = dis(gen);
             //Randomly decide crash point
             clientObj.SayReq(OP_CRASH , randNum , NULL_STRING);
