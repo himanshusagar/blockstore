@@ -32,9 +32,14 @@ public:
         else
         {
             // Averaging.
+            std::sort(values.begin() , values.end());
             const auto sum = std::accumulate(values.begin(), values.end(), 0ULL);
             double dSize = values.size();
-            std::cout << (int)( ( ( (double) sum) / dSize ) ) << "\n";
+
+            int index9 = 0.9 * dSize;
+            int index99 = 0.99 * dSize;
+            std::cout << (int)( ( ( (double) sum) / dSize ) ) << ", " << values[values.size()/2] ;
+            std::cout << values[index9] << ", " << values[index99] << std::endl;
             fflush(stdout);
         }
     }
