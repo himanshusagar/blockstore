@@ -73,7 +73,7 @@ int workload_perf(std::string port, std::string action, std::string action_type,
     {
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<double> dis(0, MAX_VAL - 4200);
+        std::uniform_int_distribution<int> dis(0 , 1e5);
 
         for (int i = 0; i < count; i++)
         {
