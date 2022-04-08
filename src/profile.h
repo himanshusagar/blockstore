@@ -33,7 +33,7 @@ public:
         {
             // Averaging.
             const auto sum = std::accumulate(values.begin(), values.end(), 0ULL);
-            double dSize = values.size() * 1e6;
+            double dSize = values.size();
             std::cout << (int)( ( ( (double) sum) / dSize ) ) << "\n";
             fflush(stdout);
         }
