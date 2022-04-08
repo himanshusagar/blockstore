@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
     std::uniform_real_distribution<float> mixed_dis(0, 1);
     std::string NULL_STRING;
 
+    bool flag = true;
     for (int i = 0; i < MAX_LOOP_ITER; i++) {
 
         writeData = std::string( 'X' , i + 1) ;
@@ -57,14 +58,15 @@ int main(int argc, char *argv[]) {
         }
 
 
-        if (mixed_dis(mixed_gen) <= 0.1)
+        if (flag && (mixed_dis(mixed_gen) <= 0.05) )
         {
-            //Let's crash for 10% of requests.
+            //Let's crash for 5% of requests.
             int randNum = dis(gen);
             //Randomly decide crash point
             clientObj.SayReq(OP_CRASH , randNum , NULL_STRING);
             if (retCode != 0)
                 cout << "Crash Point at" << i << " " << randNum << " failed";
+            flag = false;
         }
 
     }
